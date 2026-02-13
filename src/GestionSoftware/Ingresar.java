@@ -127,6 +127,7 @@ public class Ingresar extends JFrame {
     private JButton btnGuardar;
     private JButton btnBuscar;
     private JButton btnRegresar;
+    private JLabel lblUltimaCp;
 
     private ImageIcon CargarLogo(int heightPx) {
         java.net.URL url = Ingresar.class.getResource("/GestionSoftware/imagenes/LogoLeon.png");
@@ -149,7 +150,7 @@ public class Ingresar extends JFrame {
         getContentPane().setBackground(new Color(248, 250, 252));
         setResizable(true);
 
-        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 20));
+        JPanel header = new JPanel(new BorderLayout());
         header.setBackground(new Color(186, 185, 181));
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 235, 240)));
 
@@ -168,8 +169,27 @@ public class Ingresar extends JFrame {
         titulo.setFont(POP18B);
         titulo.setForeground(new Color(0, 0, 0));
 
-        header.add(B1);
-        header.add(titulo);
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 20));
+        leftPanel.setOpaque(false);
+        leftPanel.add(B1);
+        leftPanel.add(titulo);
+
+        lblUltimaCp = new JLabel("Ultima Carta Porte:  —");
+        lblUltimaCp.setFont(POP16B);
+        lblUltimaCp.setForeground(new Color(30, 30, 30));
+        lblUltimaCp.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(160, 160, 155), 1, true),
+                BorderFactory.createEmptyBorder(6, 14, 6, 14)
+        ));
+        lblUltimaCp.setOpaque(true);
+        lblUltimaCp.setBackground(new Color(255, 255, 255, 180));
+
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
+        rightPanel.setOpaque(false);
+        rightPanel.add(lblUltimaCp);
+
+        header.add(leftPanel, BorderLayout.WEST);
+        header.add(rightPanel, BorderLayout.EAST);
         add(header, BorderLayout.NORTH);
 
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -393,6 +413,7 @@ public class Ingresar extends JFrame {
 
         cargarSugerenciasDesdeDB();
         instalarAutocompletadoEnCampos();
+        actualizarLabelUltimaCp();
     }
 
     private static JTextField tf(String title) {
@@ -958,6 +979,7 @@ public class Ingresar extends JFrame {
 
                 actualizarSugerenciasEnMemoriaDesdeCampos();
                 limpiar();
+                actualizarLabelUltimaCp();
             }
 
         } catch (SQLException ex) {
@@ -1759,6 +1781,30 @@ public class Ingresar extends JFrame {
         }
     }
 }
+
+    private int obtenerUltimaCartaPorte() {
+        try (Connection cn = getConnection();
+             PreparedStatement ps = cn.prepareStatement("SELECT MAX(Carta_Porte_id) FROM Carta_Porte");
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int max = rs.getInt(1);
+                return rs.wasNull() ? 0 : max;
+            }
+        } catch (SQLException ex) {
+            System.err.println("[INFO] No se pudo obtener ultima Carta Porte: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    private void actualizarLabelUltimaCp() {
+        if (lblUltimaCp == null) return;
+        int ultimo = obtenerUltimaCartaPorte();
+        if (ultimo > 0) {
+            lblUltimaCp.setText("Ultima Carta Porte:   " + ultimo);
+        } else {
+            lblUltimaCp.setText("Ultima Carta Porte:   Sin registros");
+        }
+    }
 
     public void cargarYEditarCartaPorte(int idCartaPorte) {
         if (cargarCartaPorte(idCartaPorte)) {
