@@ -164,9 +164,6 @@ public class Registros extends JFrame {
     private JLabel lblBuscarLabel;
     private JLabel lblFiltrarColsLabel;
 
-    // Pantalla completa
-    private boolean fullScreen = false;
-    private Rectangle windowedBounds = null;
 
     // Cache logo
     private int lastLogoW = -1, lastLogoH = -1;
@@ -1724,14 +1721,7 @@ public class Registros extends JFrame {
             }
         });
 
-        JRootPane raiz = getRootPane();
-        KeyStroke ksF11 = KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0);
-        raiz.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ksF11, "TOGGLE_FULLSCREEN");
-        raiz.getActionMap().put("TOGGLE_FULLSCREEN", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) {
-                toggleFullScreen();
-            }
-        });
+        WindowState.installF11(this);
     }
 
     private void ajustarLayout() {
@@ -1791,38 +1781,6 @@ public class Registros extends JFrame {
 
         cp.revalidate();
         cp.repaint();
-    }
-
-    private void toggleFullScreen() {
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-
-        if (!gd.isFullScreenSupported()) {
-            if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH) {
-                setExtendedState(JFrame.NORMAL);
-            } else {
-                setExtendedState(JFrame.MAXIMIZED_BOTH);
-            }
-            SwingUtilities.invokeLater(this::ajustarLayout);
-            return;
-        }
-
-        if (!fullScreen) {
-            windowedBounds = getBounds();
-            dispose();
-            setUndecorated(true);
-            setVisible(true);
-            gd.setFullScreenWindow(this);
-            fullScreen = true;
-        } else {
-            gd.setFullScreenWindow(null);
-            dispose();
-            setUndecorated(false);
-            setVisible(true);
-            if (windowedBounds != null) setBounds(windowedBounds);
-            fullScreen = false;
-        }
-
-        SwingUtilities.invokeLater(this::ajustarLayout);
     }
 
     // ================== MAIN =============================

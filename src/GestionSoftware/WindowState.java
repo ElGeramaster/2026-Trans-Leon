@@ -47,4 +47,32 @@ public final class WindowState {
         next.setVisible(true);
         if (current != null) current.dispose();
     }
+
+    /**
+     * Instala el atajo F11 para alternar pantalla completa (maximizada)
+     * en cualquier JFrame. El estado se conserva al cambiar de ventana
+     * mediante switchTo().
+     */
+    public static void installF11(JFrame frame) {
+        if (frame == null) return;
+        KeyStroke ksF11 = KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0);
+        frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(ksF11, "TOGGLE_FULLSCREEN");
+        frame.getRootPane().getActionMap().put("TOGGLE_FULLSCREEN", new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) {
+                toggleFullScreen(frame);
+            }
+        });
+    }
+
+    private static void toggleFullScreen(JFrame frame) {
+        if ((frame.getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH) {
+            frame.setExtendedState(JFrame.NORMAL);
+            if (lastBounds != null) frame.setBounds(lastBounds);
+        } else {
+            Rectangle b = frame.getBounds();
+            if (b != null && b.width > 0 && b.height > 0) lastBounds = b;
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
+    }
 }

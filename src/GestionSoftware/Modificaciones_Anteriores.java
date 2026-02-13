@@ -291,6 +291,8 @@ public class Modificaciones_Anteriores extends JFrame {
         limpiarRegistrosAntiguosAutomatico();
         cargarDatos();
         aplicarFiltroTipo();
+
+        WindowState.installF11(this);
     }
 
     private JButton crearBotonModerno(String texto, Color color) {

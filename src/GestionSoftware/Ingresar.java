@@ -421,6 +421,7 @@ public class Ingresar extends JFrame {
         cargarSugerenciasDesdeDB();
         instalarAutocompletadoEnCampos();
         actualizarLabelUltimaCp();
+        WindowState.installF11(this);
     }
 
     private static JTextField tf(String title) {

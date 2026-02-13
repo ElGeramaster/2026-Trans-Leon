@@ -62,6 +62,8 @@ public class Menu extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         contenedorBotones.add(panelGrid, gbc);
 
+        WindowState.installF11(Menu.this);
+
         // Listeners
         BConsIdentidad.addActionListener((ActionEvent e) -> {
             Ingresar inicio = new Ingresar();
