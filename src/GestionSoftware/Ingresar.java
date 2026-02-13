@@ -194,6 +194,18 @@ public class Ingresar extends JFrame {
         });
 
         B1.addActionListener(e -> {
+            boolean necesitaConfirmar = (modoEdicion && dirty) || (!modoEdicion && hayCamposConDatos());
+            if (necesitaConfirmar) {
+                String msg = modoEdicion
+                        ? "Tienes cambios sin guardar.\n¿Deseas regresar sin guardar los cambios?"
+                        : "Has introducido datos en el formulario.\n¿Deseas regresar y perder lo que has escrito?";
+                int op = JOptionPane.showConfirmDialog(
+                        this, msg, "Advertencia",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+                if (op != JOptionPane.YES_OPTION) return;
+            }
             try {
                 WindowState.switchTo(this, new Registros());
             } catch (Throwable ignore) {
@@ -409,6 +421,8 @@ public class Ingresar extends JFrame {
         cargarSugerenciasDesdeDB();
         instalarAutocompletadoEnCampos();
         actualizarLabelUltimaCp();
+        
+        WindowState.installF11(this);
     }
 
     private static JTextField tf(String title) {
@@ -660,6 +674,25 @@ public class Ingresar extends JFrame {
             return op == JOptionPane.YES_OPTION;
         }
         return true;
+    }
+
+    private boolean hayCamposConDatos() {
+        JTextField[] campos = {
+                cpId, cliente, factura1, fechaFactura, valor, fechaPago,
+                destino, referencia, remitente, consignat, factura2,
+                operador, placaCab, placaFur, valorFlete, anticipo,
+                fechaPagado, fCarga, fCruce, fSalTU, fFDestino, fEnDestino,
+                fDescarga, fEDoctos, custodio, valorCustodio, fechaPagoCustodio
+        };
+        for (JTextField f : campos) {
+            String txt = f.getText().trim();
+            if (!txt.isEmpty()) {
+                double d = parseMoney(txt);
+                if (Double.isNaN(d) || d != 0.0) return true;
+            }
+        }
+        if (!observaciones.getText().trim().isEmpty()) return true;
+        return false;
     }
 
     private void setModoEdicion(boolean enabled) {

@@ -468,9 +468,10 @@ public class Registros extends JFrame {
         scrollPane = new JScrollPane(tabla);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         getContentPane().add(scrollPane);
 
-        tabla.addMouseWheelListener(e -> {
+        scrollPane.addMouseWheelListener(e -> {
             if (e.isShiftDown()) {
                 JScrollBar h = scrollPane.getHorizontalScrollBar();
                 int amount = e.getUnitsToScroll() * h.getUnitIncrement();
@@ -641,6 +642,8 @@ public class Registros extends JFrame {
         cargarDatos();
         instalarResponsiveUI();
         SwingUtilities.invokeLater(this::ajustarLayout);
+        WindowState.installF11(this);
+        
     }
 
     // ================== COPIAR / SELECCIONAR TEXTO ========

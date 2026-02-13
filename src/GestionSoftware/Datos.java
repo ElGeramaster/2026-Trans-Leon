@@ -158,6 +158,8 @@ public class Datos extends JFrame {
         raiz.getActionMap().put("ESCAPE", new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) { B1.doClick(); }
         });
+
+        WindowState.installF11(this);
     }
 
     // ====== ASEGURAR COLUMNAS EN BD ======
