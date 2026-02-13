@@ -1,5 +1,6 @@
 package GestionSoftware;
 
+import java.awt.event.InputEvent;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -9,7 +10,6 @@ import javax.swing.table.TableRowSorter;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter;
 import javax.swing.table.TableCellEditor;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -481,7 +481,7 @@ public class Registros extends JFrame {
         });
 
         // ===== COPIAR CELDAS SELECCIONADAS CON Ctrl+C =====
-        KeyStroke copiar = KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+        KeyStroke copiar = KeyStroke.getKeyStroke(KeyEvent.VK_C,InputEvent.CTRL_DOWN_MASK);
         tabla.getInputMap(JComponent.WHEN_FOCUSED).put(copiar, "copiarCeldas");
         tabla.getActionMap().put("copiarCeldas", new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
