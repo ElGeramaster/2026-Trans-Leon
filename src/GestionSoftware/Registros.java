@@ -518,7 +518,14 @@ public class Registros extends JFrame {
         navegarA(btnAgregar,        Ingresar::new);
         navegarA(btnModificaciones, Modificaciones_Anteriores::new);
 
-        btnExportar.addActionListener(e -> ExportadorDocumentos.exportarDesdeTabla(this, tabla));
+        btnExportar.addActionListener(e -> {
+            int filaSeleccionada = tabla.getSelectedRow();
+            if (filaSeleccionada == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona un registro para exportar.");
+                return;
+            }
+            ExportadorDocumentos.exportarFactura(this, tabla, filaSeleccionada, COLUMNAS);
+        });
 
         btnModificar.addActionListener(e -> {
             int filaSeleccionada = tabla.getSelectedRow();

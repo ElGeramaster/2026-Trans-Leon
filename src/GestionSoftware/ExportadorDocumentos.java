@@ -1,7 +1,6 @@
 package GestionSoftware;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -9,29 +8,46 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Exporta datos de una JTable a formato Excel (XML Spreadsheet 2003).
- * No requiere librerías externas — Excel, LibreOffice y Google Sheets
- * abren este formato nativamente con estilos, anchos y colores.
+ * Exporta un registro seleccionado de la JTable como factura en formato
+ * Excel (XML Spreadsheet 2003). No requiere librerías externas.
  */
 public class ExportadorDocumentos {
 
     /**
-     * Muestra un JFileChooser y exporta la tabla completa a un archivo .xls.
-     * Solo exporta las filas visibles (respeta filtros del sorter).
+     * Exporta la fila seleccionada como factura Excel.
+     *
+     * @param parent     ventana padre
+     * @param tabla      la JTable de registros
+     * @param viewRow    índice de fila en la vista (ya convertido si hay sorter)
+     * @param columnas   nombres de las columnas visibles
      */
-    public static void exportarDesdeTabla(JFrame parent, JTable tabla) {
-        if (tabla == null || tabla.getRowCount() == 0) {
+    public static void exportarFactura(JFrame parent, JTable tabla, int viewRow, String[] columnas) {
+        if (tabla == null || viewRow < 0) {
             JOptionPane.showMessageDialog(parent,
-                "No hay datos para exportar.",
+                "Selecciona un registro para exportar.",
                 "Aviso", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
+        // Leer datos de la fila
+        int colCount = tabla.getColumnCount();
+        String[] valores = new String[colCount];
+        for (int c = 0; c < colCount; c++) {
+            Object val = tabla.getValueAt(viewRow, c);
+            valores[c] = (val == null) ? "" : val.toString().trim();
+        }
+
+        // Nombre sugerido: Factura_CartaPorte_Cliente.xls
+        String cartaPorte = valores.length > 0 ? valores[0].replaceAll("[^a-zA-Z0-9]", "") : "registro";
+        String cliente    = valores.length > 1 ? valores[1].replaceAll("[^a-zA-Z0-9_ ]", "").trim().replace(" ", "_") : "";
+        String nombreSugerido = "Factura_" + cartaPorte;
+        if (!cliente.isEmpty()) nombreSugerido += "_" + cliente;
+        nombreSugerido += ".xls";
+
         JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle("Guardar como Excel");
-        fc.setSelectedFile(new File("Registros.xls"));
-        fc.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(
-            "Excel (*.xls)", "xls"));
+        fc.setDialogTitle("Exportar Factura");
+        fc.setSelectedFile(new File(nombreSugerido));
+        fc.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel (*.xls)", "xls"));
 
         if (fc.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) return;
 
@@ -48,9 +64,9 @@ public class ExportadorDocumentos {
         }
 
         try {
-            escribirXmlSpreadsheet(tabla, archivo);
+            escribirFactura(columnas, valores, archivo);
             JOptionPane.showMessageDialog(parent,
-                "Archivo exportado correctamente:\n" + archivo.getAbsolutePath(),
+                "Factura exportada correctamente:\n" + archivo.getAbsolutePath(),
                 "Exportación Exitosa", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(parent,
@@ -59,130 +75,160 @@ public class ExportadorDocumentos {
         }
     }
 
-    /**
-     * Genera un archivo XML Spreadsheet 2003 (.xls) con encabezados,
-     * estilos de columna y datos formateados.
-     */
-    private static void escribirXmlSpreadsheet(JTable tabla, File archivo) throws Exception {
-        TableModel model = tabla.getModel();
-        int colCount = tabla.getColumnCount();
-        int rowCount = tabla.getRowCount();
-
+    private static void escribirFactura(String[] columnas, String[] valores, File archivo) throws Exception {
         try (PrintWriter pw = new PrintWriter(
                 new OutputStreamWriter(new FileOutputStream(archivo), StandardCharsets.UTF_8))) {
 
-            // Cabecera XML Spreadsheet 2003
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             pw.println("<?mso-application progid=\"Excel.Sheet\"?>");
             pw.println("<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"");
             pw.println(" xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">");
 
-            // Estilos
+            // ========== ESTILOS ==========
             pw.println("<Styles>");
 
-            // Estilo encabezado
-            pw.println(" <Style ss:ID=\"header\">");
-            pw.println("  <Font ss:Bold=\"1\" ss:Size=\"12\" ss:Color=\"#FFFFFF\"/>");
+            // Título empresa
+            pw.println(" <Style ss:ID=\"titulo\">");
+            pw.println("  <Font ss:Bold=\"1\" ss:Size=\"18\" ss:Color=\"#1A5276\"/>");
+            pw.println("  <Alignment ss:Horizontal=\"Center\" ss:Vertical=\"Center\"/>");
+            pw.println(" </Style>");
+
+            // Subtítulo factura
+            pw.println(" <Style ss:ID=\"subtitulo\">");
+            pw.println("  <Font ss:Bold=\"1\" ss:Size=\"14\" ss:Color=\"#2E86C1\"/>");
+            pw.println("  <Alignment ss:Horizontal=\"Center\" ss:Vertical=\"Center\"/>");
+            pw.println(" </Style>");
+
+            // Sección header (ej: DATOS DEL CLIENTE)
+            pw.println(" <Style ss:ID=\"seccion\">");
+            pw.println("  <Font ss:Bold=\"1\" ss:Size=\"11\" ss:Color=\"#FFFFFF\"/>");
             pw.println("  <Interior ss:Color=\"#2E86C1\" ss:Pattern=\"Solid\"/>");
-            pw.println("  <Alignment ss:Horizontal=\"Center\" ss:Vertical=\"Center\" ss:WrapText=\"1\"/>");
+            pw.println("  <Alignment ss:Horizontal=\"Left\" ss:Vertical=\"Center\"/>");
             pw.println("  <Borders>");
             pw.println("   <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\" ss:Color=\"#1A5276\"/>");
             pw.println("  </Borders>");
             pw.println(" </Style>");
 
-            // Estilo datos normal
-            pw.println(" <Style ss:ID=\"data\">");
-            pw.println("  <Font ss:Size=\"11\"/>");
-            pw.println("  <Alignment ss:Vertical=\"Center\" ss:WrapText=\"1\"/>");
-            pw.println("  <Borders>");
-            pw.println("   <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\" ss:Color=\"#D5D8DC\"/>");
-            pw.println("  </Borders>");
-            pw.println(" </Style>");
-
-            // Estilo fila alterna
-            pw.println(" <Style ss:ID=\"dataAlt\">");
-            pw.println("  <Font ss:Size=\"11\"/>");
-            pw.println("  <Interior ss:Color=\"#EBF5FB\" ss:Pattern=\"Solid\"/>");
-            pw.println("  <Alignment ss:Vertical=\"Center\" ss:WrapText=\"1\"/>");
-            pw.println("  <Borders>");
-            pw.println("   <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\" ss:Color=\"#D5D8DC\"/>");
-            pw.println("  </Borders>");
-            pw.println(" </Style>");
-
-            // Estilo numérico
-            pw.println(" <Style ss:ID=\"numero\">");
-            pw.println("  <Font ss:Size=\"11\"/>");
-            pw.println("  <NumberFormat ss:Format=\"#,##0.00\"/>");
+            // Label (nombre del campo)
+            pw.println(" <Style ss:ID=\"label\">");
+            pw.println("  <Font ss:Bold=\"1\" ss:Size=\"10\" ss:Color=\"#2C3E50\"/>");
+            pw.println("  <Interior ss:Color=\"#D6EAF8\" ss:Pattern=\"Solid\"/>");
             pw.println("  <Alignment ss:Horizontal=\"Right\" ss:Vertical=\"Center\"/>");
             pw.println("  <Borders>");
+            pw.println("   <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\" ss:Color=\"#AED6F1\"/>");
+            pw.println("   <Border ss:Position=\"Right\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\" ss:Color=\"#AED6F1\"/>");
+            pw.println("  </Borders>");
+            pw.println(" </Style>");
+
+            // Valor (dato)
+            pw.println(" <Style ss:ID=\"valor\">");
+            pw.println("  <Font ss:Size=\"10\"/>");
+            pw.println("  <Alignment ss:Horizontal=\"Left\" ss:Vertical=\"Center\" ss:WrapText=\"1\"/>");
+            pw.println("  <Borders>");
             pw.println("   <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\" ss:Color=\"#D5D8DC\"/>");
             pw.println("  </Borders>");
             pw.println(" </Style>");
 
-            // Estilo numérico alterno
-            pw.println(" <Style ss:ID=\"numeroAlt\">");
-            pw.println("  <Font ss:Size=\"11\"/>");
-            pw.println("  <Interior ss:Color=\"#EBF5FB\" ss:Pattern=\"Solid\"/>");
-            pw.println("  <NumberFormat ss:Format=\"#,##0.00\"/>");
-            pw.println("  <Alignment ss:Horizontal=\"Right\" ss:Vertical=\"Center\"/>");
+            // Valor moneda
+            pw.println(" <Style ss:ID=\"valorMoney\">");
+            pw.println("  <Font ss:Bold=\"1\" ss:Size=\"10\" ss:Color=\"#1A5276\"/>");
+            pw.println("  <Alignment ss:Horizontal=\"Left\" ss:Vertical=\"Center\"/>");
             pw.println("  <Borders>");
             pw.println("   <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\" ss:Color=\"#D5D8DC\"/>");
             pw.println("  </Borders>");
+            pw.println(" </Style>");
+
+            // Línea separadora
+            pw.println(" <Style ss:ID=\"separador\">");
+            pw.println("  <Interior ss:Color=\"#F8F9FA\" ss:Pattern=\"Solid\"/>");
             pw.println(" </Style>");
 
             pw.println("</Styles>");
 
-            // Hoja
-            pw.println("<Worksheet ss:Name=\"Registros\">");
-            pw.println("<Table>");
+            // ========== HOJA ==========
+            pw.println("<Worksheet ss:Name=\"Factura\">");
+            pw.println("<Table ss:DefaultRowHeight=\"20\">");
 
-            // Anchos de columna
-            for (int c = 0; c < colCount; c++) {
-                int viewCol = c;
-                int ancho = tabla.getColumnModel().getColumn(viewCol).getPreferredWidth();
-                if (ancho < 60) ancho = 80;
-                pw.println(" <Column ss:AutoFitWidth=\"1\" ss:Width=\"" + ancho + "\"/>");
-            }
+            // Columnas: A=label(200), B=valor(300)
+            pw.println(" <Column ss:Width=\"200\"/>");
+            pw.println(" <Column ss:Width=\"350\"/>");
 
-            // Fila de encabezados
-            pw.println(" <Row ss:Height=\"30\">");
-            for (int c = 0; c < colCount; c++) {
-                String nombre = esc(tabla.getColumnName(c));
-                pw.println("  <Cell ss:StyleID=\"header\"><Data ss:Type=\"String\">" + nombre + "</Data></Cell>");
-            }
+            // Fila vacía superior
+            pw.println(" <Row ss:Height=\"10\"/>");
+
+            // Título
+            pw.println(" <Row ss:Height=\"35\">");
+            celda(pw, "titulo", "TRANSPORTES DE LEÓN", 2);
             pw.println(" </Row>");
 
-            // Filas de datos (usa vista, respeta filtros y orden)
-            for (int r = 0; r < rowCount; r++) {
-                boolean alt = (r % 2 == 1);
-                String estiloTexto = alt ? "dataAlt" : "data";
-                String estiloNum   = alt ? "numeroAlt" : "numero";
+            // Subtítulo
+            String numFactura = obtenerValor(columnas, valores, "CARTA PORTE");
+            pw.println(" <Row ss:Height=\"28\">");
+            celda(pw, "subtitulo", "FACTURA - CARTA PORTE #" + numFactura, 2);
+            pw.println(" </Row>");
 
-                pw.println(" <Row>");
-                for (int c = 0; c < colCount; c++) {
-                    Object val = tabla.getValueAt(r, c);
-                    String texto = (val == null) ? "" : val.toString().trim();
+            // Separador
+            pw.println(" <Row ss:Height=\"8\">");
+            celda(pw, "separador", "", 2);
+            pw.println(" </Row>");
 
-                    // Detectar si es valor numérico/moneda
-                    String limpio = texto.replaceAll("[^0-9.\\-]", "");
-                    boolean esNumero = false;
-                    double numVal = 0;
+            // === SECCIÓN: DATOS DEL CLIENTE ===
+            seccion(pw, "DATOS DEL CLIENTE");
+            fila(pw, columnas, valores, "CLIENTE");
+            fila(pw, columnas, valores, "REMITENTE");
+            fila(pw, columnas, valores, "CONSIGNATORIO");
+            fila(pw, columnas, valores, "DESTINO");
 
-                    if (!limpio.isEmpty() && texto.contains("$")) {
-                        try {
-                            numVal = Double.parseDouble(limpio);
-                            esNumero = true;
-                        } catch (NumberFormatException ignore) {}
-                    }
+            separador(pw);
 
-                    if (esNumero) {
-                        pw.println("  <Cell ss:StyleID=\"" + estiloNum + "\"><Data ss:Type=\"Number\">" + numVal + "</Data></Cell>");
-                    } else {
-                        pw.println("  <Cell ss:StyleID=\"" + estiloTexto + "\"><Data ss:Type=\"String\">" + esc(texto) + "</Data></Cell>");
-                    }
-                }
-                pw.println(" </Row>");
-            }
+            // === SECCIÓN: DATOS DE LA FACTURA ===
+            seccion(pw, "DATOS DE LA FACTURA");
+            fila(pw, columnas, valores, "FACTURA");
+            fila(pw, columnas, valores, "FECHA FACTURA");
+            fila(pw, columnas, valores, "REFERENCIA");
+            fila(pw, columnas, valores, "FECHA DE PAGO");
+            fila(pw, columnas, valores, "FECHA DE PAGADO");
+
+            separador(pw);
+
+            // === SECCIÓN: VALORES ===
+            seccion(pw, "VALORES Y MONTOS");
+            filaMoney(pw, columnas, valores, "VALOR");
+            filaMoney(pw, columnas, valores, "VALOR FLETE");
+            filaMoney(pw, columnas, valores, "ANTICIPO");
+            filaMoney(pw, columnas, valores, "A.CANCELACION");
+            filaMoney(pw, columnas, valores, "VALOR CUSTODIO");
+
+            separador(pw);
+
+            // === SECCIÓN: TRANSPORTE ===
+            seccion(pw, "DATOS DE TRANSPORTE");
+            fila(pw, columnas, valores, "OPERADOR");
+            fila(pw, columnas, valores, "PLACA CABEZAL");
+            fila(pw, columnas, valores, "PLACA DEL FURGON");
+            fila(pw, columnas, valores, "SEGURIDAD PRIVADA");
+
+            separador(pw);
+
+            // === SECCIÓN: FECHAS DE TRÁNSITO ===
+            seccion(pw, "FECHAS DE TRÁNSITO");
+            fila(pw, columnas, valores, "F. DE CARGA");
+            fila(pw, columnas, valores, "F. DE CRUCE");
+            fila(pw, columnas, valores, "F. SAL. T.U.");
+            fila(pw, columnas, valores, "F.F. DESTINO");
+            fila(pw, columnas, valores, "F. EN. DESTINO");
+            fila(pw, columnas, valores, "F. DESCARGA");
+            fila(pw, columnas, valores, "F.E. DE DOCTOS.");
+            fila(pw, columnas, valores, "F. PAGO CUSTODIO");
+
+            separador(pw);
+
+            // === SECCIÓN: OBSERVACIONES ===
+            seccion(pw, "OBSERVACIONES");
+            String obs = obtenerValor(columnas, valores, "OBSERVACIONES");
+            pw.println(" <Row ss:Height=\"60\">");
+            pw.println("  <Cell ss:StyleID=\"valor\" ss:MergeAcross=\"1\"><Data ss:Type=\"String\">" + esc(obs) + "</Data></Cell>");
+            pw.println(" </Row>");
 
             pw.println("</Table>");
             pw.println("</Worksheet>");
@@ -190,7 +236,53 @@ public class ExportadorDocumentos {
         }
     }
 
-    /** Escapa caracteres especiales para XML. */
+    // ========== Helpers de escritura ==========
+
+    private static String obtenerValor(String[] columnas, String[] valores, String nombre) {
+        for (int i = 0; i < columnas.length; i++) {
+            if (columnas[i].equalsIgnoreCase(nombre)) {
+                return (i < valores.length) ? valores[i] : "";
+            }
+        }
+        return "";
+    }
+
+    private static void seccion(PrintWriter pw, String titulo) {
+        pw.println(" <Row ss:Height=\"25\">");
+        pw.println("  <Cell ss:StyleID=\"seccion\" ss:MergeAcross=\"1\"><Data ss:Type=\"String\">" + esc(titulo) + "</Data></Cell>");
+        pw.println(" </Row>");
+    }
+
+    private static void fila(PrintWriter pw, String[] columnas, String[] valores, String campo) {
+        String valor = obtenerValor(columnas, valores, campo);
+        pw.println(" <Row ss:Height=\"22\">");
+        pw.println("  <Cell ss:StyleID=\"label\"><Data ss:Type=\"String\">" + esc(campo) + "</Data></Cell>");
+        pw.println("  <Cell ss:StyleID=\"valor\"><Data ss:Type=\"String\">" + esc(valor) + "</Data></Cell>");
+        pw.println(" </Row>");
+    }
+
+    private static void filaMoney(PrintWriter pw, String[] columnas, String[] valores, String campo) {
+        String valor = obtenerValor(columnas, valores, campo);
+        pw.println(" <Row ss:Height=\"22\">");
+        pw.println("  <Cell ss:StyleID=\"label\"><Data ss:Type=\"String\">" + esc(campo) + "</Data></Cell>");
+        pw.println("  <Cell ss:StyleID=\"valorMoney\"><Data ss:Type=\"String\">" + esc(valor) + "</Data></Cell>");
+        pw.println(" </Row>");
+    }
+
+    private static void separador(PrintWriter pw) {
+        pw.println(" <Row ss:Height=\"6\">");
+        pw.println("  <Cell ss:StyleID=\"separador\"><Data ss:Type=\"String\"></Data></Cell>");
+        pw.println(" </Row>");
+    }
+
+    private static void celda(PrintWriter pw, String estilo, String texto, int mergeAcross) {
+        if (mergeAcross > 1) {
+            pw.println("  <Cell ss:StyleID=\"" + estilo + "\" ss:MergeAcross=\"" + (mergeAcross - 1) + "\"><Data ss:Type=\"String\">" + esc(texto) + "</Data></Cell>");
+        } else {
+            pw.println("  <Cell ss:StyleID=\"" + estilo + "\"><Data ss:Type=\"String\">" + esc(texto) + "</Data></Cell>");
+        }
+    }
+
     private static String esc(String s) {
         if (s == null) return "";
         return s.replace("&", "&amp;")
