@@ -151,6 +151,7 @@ public class Registros extends JFrame {
     private JButton btnModificar;
     private JButton btnEliminar;
     private JButton btnModificaciones;
+    private JButton btnExportar;
 
     // Sugerencias (autocompletado)
     private final Map<Integer, LinkedHashSet<String>> sugerencias = new HashMap<>();
@@ -511,10 +512,13 @@ public class Registros extends JFrame {
         btnModificar      = crearBotonTexto("Modificar",  new Color(218,194,254), Color.BLACK);
         btnEliminar       = crearBotonTexto("Eliminar",   new Color(229,115,115), Color.BLACK);
         btnModificaciones = crearBotonIcono(CambiosIcono, "Cambios",  new Color(229,115,115), Color.BLACK, "Ver modificaciones anteriores");
+        btnExportar       = crearBotonTexto("Exportar",   new Color(41, 128, 185), Color.WHITE);
 
         navegarA(btnDatos,          Datos::new);
         navegarA(btnAgregar,        Ingresar::new);
         navegarA(btnModificaciones, Modificaciones_Anteriores::new);
+
+        btnExportar.addActionListener(e -> ExportadorDocumentos.exportarDesdeTabla(this, tabla));
 
         btnModificar.addActionListener(e -> {
             int filaSeleccionada = tabla.getSelectedRow();
@@ -1754,14 +1758,15 @@ public class Registros extends JFrame {
         int wDatos   = (btnDatos != null && btnDatos.getIcon() != null) ? 56 : btnW;
         int wCambios = (btnModificaciones != null && btnModificaciones.getIcon() != null) ? 56 : btnW;
 
-        int totalNormal = wDatos + gap + btnW * 3 + gap * 3 + wCambios;
+        int totalNormal = wDatos + gap + btnW * 4 + gap * 4 + wCambios;
         int startX = Math.max(10, (w - totalNormal) / 2);
 
         int xCursor = startX;
-        if (btnDatos != null)        { btnDatos.setBounds(xCursor, btnY, wDatos, btnH);           xCursor += wDatos + gap; }
-        if (btnAgregar != null)      { btnAgregar.setBounds(xCursor, btnY, btnW, btnH);           xCursor += btnW + gap; }
-        if (btnModificar != null)    { btnModificar.setBounds(xCursor, btnY, btnW, btnH);         xCursor += btnW + gap; }
-        if (btnEliminar != null)     { btnEliminar.setBounds(xCursor, btnY, btnW, btnH);          xCursor += btnW + gap; }
+        if (btnDatos != null)          { btnDatos.setBounds(xCursor, btnY, wDatos, btnH);           xCursor += wDatos + gap; }
+        if (btnAgregar != null)        { btnAgregar.setBounds(xCursor, btnY, btnW, btnH);           xCursor += btnW + gap; }
+        if (btnModificar != null)      { btnModificar.setBounds(xCursor, btnY, btnW, btnH);         xCursor += btnW + gap; }
+        if (btnEliminar != null)       { btnEliminar.setBounds(xCursor, btnY, btnW, btnH);          xCursor += btnW + gap; }
+        if (btnExportar != null)       { btnExportar.setBounds(xCursor, btnY, btnW, btnH);          xCursor += btnW + gap; }
         if (btnModificaciones != null) btnModificaciones.setBounds(xCursor, btnY, wCambios, btnH);
 
         cp.revalidate();
