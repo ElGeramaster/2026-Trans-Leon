@@ -1,3 +1,4 @@
+
 package GestionSoftware;
 
 import javax.swing.*;
@@ -24,7 +25,8 @@ public class Modificaciones_Anteriores extends JFrame {
     private JComboBox<String> cbRango;
     private JComboBox<String> cbTipo;
     private JButton btnDetalle;
-    private JButton btnLimpiarAntiguos;
+    private JButton btnEliminar;
+    private JButton btnLimpiarTodo;
     private JButton B1;
     private JLabel lblTitulo;
     private JLabel lblSubtitulo;
@@ -190,8 +192,9 @@ public class Modificaciones_Anteriores extends JFrame {
         cbTipo.setBackground(Color.WHITE);
         cbTipo.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnDetalle = crearBotonModerno("📄 Ver Detalles", colorSecundario);
-        btnLimpiarAntiguos = crearBotonModerno("🗑️ Limpiar Antiguos", new Color(230, 126, 34));
+        btnDetalle     = crearBotonModerno("📄 Ver Detalles", colorSecundario);
+        btnEliminar    = crearBotonModerno("🗑️ Eliminar", new Color(231, 76, 60));
+        btnLimpiarTodo = crearBotonModerno("🧹 Limpiar Todo", new Color(230, 126, 34));
 
         controlPanel.add(lblRango);
         controlPanel.add(cbRango);
@@ -200,7 +203,8 @@ public class Modificaciones_Anteriores extends JFrame {
         controlPanel.add(cbTipo);
         controlPanel.add(Box.createHorizontalStrut(20));
         controlPanel.add(btnDetalle);
-        controlPanel.add(btnLimpiarAntiguos);
+        controlPanel.add(btnEliminar);
+        controlPanel.add(btnLimpiarTodo);
 
         // ========== PANEL PRINCIPAL (Tabla) ==========
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -222,7 +226,7 @@ public class Modificaciones_Anteriores extends JFrame {
         tabla.setRowHeight(32);
         tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabla.setBackground(Color.WHITE);
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabla.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tabla.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         tabla.setSelectionBackground(new Color(224, 247, 250));
         tabla.setSelectionForeground(new Color(33, 33, 33));
@@ -276,8 +280,8 @@ public class Modificaciones_Anteriores extends JFrame {
         cbTipo.addActionListener(e -> aplicarFiltroTipo());
         
         btnDetalle.addActionListener(e -> verDetalleSeleccionado());
-        
-        btnLimpiarAntiguos.addActionListener(e -> limpiarRegistrosAntiguos());
+        btnEliminar.addActionListener(e -> eliminarSeleccionados());
+        btnLimpiarTodo.addActionListener(e -> limpiarTodoPorFiltro());
 
         // ESC para regresar
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -335,47 +339,100 @@ public class Modificaciones_Anteriores extends JFrame {
         }
     }
     
-    private void limpiarRegistrosAntiguos() {
-        int confirmacion = JOptionPane.showConfirmDialog(
-            this,
-            "¿Deseas eliminar todos los registros con más de " + DIAS_RETENCION + " días?\n" +
-            "Esta acción no se puede deshacer.",
-            "Confirmar Limpieza",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE
-        );
-        
-        if (confirmacion != JOptionPane.YES_OPTION) {
+    private void eliminarSeleccionados() {
+        int[] selRows = tabla.getSelectedRows();
+        if (selRows.length == 0) {
+            JOptionPane.showMessageDialog(this,
+                "Selecciona uno o más registros para eliminar.",
+                "Aviso", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        
-        LocalDateTime limite = LocalDateTime.now().minusDays(DIAS_RETENCION);
-        Timestamp timestamp = Timestamp.valueOf(limite);
-        
-        String sql = "DELETE FROM " + AUDIT_TABLE + " WHERE modificado_en < ?";
-        
+
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+            "¿Eliminar " + selRows.length + " registro(s) seleccionado(s)?\n" +
+            "Esta acción no se puede deshacer.",
+            "Confirmar Eliminación",
+            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (confirmacion != JOptionPane.YES_OPTION) return;
+
+        // Recolectar los AUDIT_IDs de las filas seleccionadas
+        java.util.List<Long> ids = new java.util.ArrayList<>();
+        for (int viewRow : selRows) {
+            int modelRow = tabla.convertRowIndexToModel(viewRow);
+            String auditStr = String.valueOf(modelo.getValueAt(modelRow, COL_AUDIT_ID));
+            try { ids.add(Long.valueOf(auditStr)); } catch (NumberFormatException ignore) {}
+        }
+
+        if (ids.isEmpty()) return;
+
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < ids.size(); i++) {
+            if (i > 0) placeholders.append(',');
+            placeholders.append('?');
+        }
+
+        String sql = "DELETE FROM " + AUDIT_TABLE + " WHERE id IN (" + placeholders + ")";
         try (Connection c = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
              PreparedStatement ps = c.prepareStatement(sql)) {
-            
-            ps.setTimestamp(1, timestamp);
+            for (int i = 0; i < ids.size(); i++) ps.setLong(i + 1, ids.get(i));
             int eliminados = ps.executeUpdate();
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Se eliminaron " + eliminados + " registros antiguos correctamente.",
-                "Limpieza Completada",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            
+
+            JOptionPane.showMessageDialog(this,
+                "Se eliminaron " + eliminados + " registro(s) correctamente.",
+                "Eliminación Completada", JOptionPane.INFORMATION_MESSAGE);
+
             cargarDatos();
-            
+            aplicarFiltroTipo();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(
-                this,
+            JOptionPane.showMessageDialog(this,
+                "Error al eliminar registros: " + ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void limpiarTodoPorFiltro() {
+        String tipoSel = (String) cbTipo.getSelectedItem();
+        String rangoSel = (String) cbRango.getSelectedItem();
+
+        // Determinar qué acción filtrar
+        String accionDb = null;
+        if ("Agregados".equals(tipoSel))   accionDb = "INSERT";
+        if ("Modificados".equals(tipoSel)) accionDb = "UPDATE";
+        if ("Eliminados".equals(tipoSel))  accionDb = "DELETE";
+
+        String descripcion = (accionDb != null) ? "todos los registros de tipo \"" + tipoSel + "\"" : "TODOS los registros";
+        if (!"Todo".equals(rangoSel)) descripcion += " del período \"" + rangoSel + "\"";
+
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+            "¿Eliminar " + descripcion + "?\nEsta acción no se puede deshacer.",
+            "Confirmar Limpieza",
+            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (confirmacion != JOptionPane.YES_OPTION) return;
+
+        Timestamp desde = calcularInicioPorRango(rangoSel);
+
+        StringBuilder sql = new StringBuilder("DELETE FROM " + AUDIT_TABLE + " WHERE 1=1");
+        if (accionDb != null) sql.append(" AND accion = ?");
+        if (desde != null)    sql.append(" AND modificado_en >= ?");
+
+        try (Connection c = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+             PreparedStatement ps = c.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (accionDb != null) ps.setString(idx++, accionDb);
+            if (desde != null)    ps.setTimestamp(idx, desde);
+
+            int eliminados = ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this,
+                "Se eliminaron " + eliminados + " registro(s) correctamente.",
+                "Limpieza Completada", JOptionPane.INFORMATION_MESSAGE);
+
+            cargarDatos();
+            aplicarFiltroTipo();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this,
                 "Error al limpiar registros: " + ex.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
