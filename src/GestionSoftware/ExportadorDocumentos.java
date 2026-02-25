@@ -141,10 +141,10 @@ public class ExportadorDocumentos {
             pw.println("<style>");
             pw.println("  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; }");
             pw.println("  table { border-collapse: collapse; width: 600px; margin: 0 auto; }");
-            pw.println("  .logo-row td { text-align: center; padding: 15px 0; }");
-            pw.println("  .logo-row img { height: 90px; }");
-            pw.println("  .titulo { font-size: 20px; font-weight: bold; color: #1A5276;");
-            pw.println("            text-align: center; padding: 8px; }");
+            pw.println("  .header-titulo { font-size: 20px; font-weight: bold; color: #1A5276;");
+            pw.println("                   text-align: left; padding: 10px; vertical-align: middle; }");
+            pw.println("  .header-logo { text-align: right; padding: 10px; vertical-align: middle; }");
+            pw.println("  .header-logo img { height: 55px; }");
             pw.println("  .carta-porte { font-size: 16px; font-weight: bold; color: #C0392B;");
             pw.println("                 text-align: center; padding: 6px; }");
             pw.println("  .seccion { background: #2E86C1; color: #FFFFFF; font-weight: bold;");
@@ -169,15 +169,15 @@ public class ExportadorDocumentos {
             pw.println("<body>");
             pw.println("<table>");
 
-            // ===== LOGO =====
+            // ===== TÍTULO + LOGO en la misma fila =====
+            pw.println("<tr>");
+            pw.println("  <td class=\"header-titulo\">TRANSPORTES DE LE&Oacute;N</td>");
             if (logoB64 != null) {
-                pw.println("<tr class=\"logo-row\"><td colspan=\"2\">");
-                pw.println("  <img src=\"data:image/png;base64," + logoB64 + "\" />");
-                pw.println("</td></tr>");
+                pw.println("  <td class=\"header-logo\"><img src=\"data:image/png;base64," + logoB64 + "\" /></td>");
+            } else {
+                pw.println("  <td></td>");
             }
-
-            // ===== TÍTULO =====
-            pw.println("<tr><td colspan=\"2\" class=\"titulo\">TRANSPORTES DE LE&Oacute;N</td></tr>");
+            pw.println("</tr>");
 
             // ===== CARTA PORTE EN ROJO =====
             String numCP = esc(obtenerValor(columnas, valores, "CARTA PORTE"));
