@@ -20,6 +20,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.imageio.ImageIO;
 
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
@@ -412,13 +413,7 @@ public class Registros extends JFrame {
         B1.setMinimumSize(new Dimension(60, 60));
         B1.setMaximumSize(new Dimension(60, 60));
 
-        B1.addActionListener(e -> {
-            try {
-                WindowState.switchTo(this, new Ingresar());
-            } catch (Throwable ignore) {
-                dispose();
-            }
-        });
+        navegarA(B1, Ingresar::new);
 
         B1.addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent evt) { B1.setBackground(Color.RED); }
@@ -510,97 +505,16 @@ public class Registros extends JFrame {
 
         initSugerencias();
 
-        ImageIcon iconDatos      = scaledIcon(DatosIcono, 44, 44);
-        ImageIcon iconDatosOver  = scaledIcon(DatosIcono, 48, 48);
-        ImageIcon iconDatosPress = scaledIcon(DatosIcono, 42, 42);
+        // Botones principales
+        btnDatos          = crearBotonIcono(DatosIcono,   "Clientes", new Color(192,192,192), Color.WHITE, "Clientes");
+        btnAgregar        = crearBotonTexto("Agregar",    new Color(163,231,214), Color.BLACK);
+        btnModificar      = crearBotonTexto("Modificar",  new Color(218,194,254), Color.BLACK);
+        btnEliminar       = crearBotonTexto("Eliminar",   new Color(229,115,115), Color.BLACK);
+        btnModificaciones = crearBotonIcono(CambiosIcono, "Cambios",  new Color(229,115,115), Color.BLACK, "Ver modificaciones anteriores");
 
-        if (iconDatos == null) {
-            btnDatos = new JButton("Clientes");
-            btnDatos.setFont(new Font("Poppins", Font.BOLD,16));
-            btnDatos.setBackground(new Color(192, 192, 192));
-            btnDatos.setForeground(Color.WHITE);
-            btnDatos.setFocusPainted(false);
-        } else {
-            btnDatos = new JButton(iconDatos);
-            if (iconDatosOver  != null) btnDatos.setRolloverIcon(iconDatosOver);
-            if (iconDatosPress != null) btnDatos.setPressedIcon(iconDatosPress);
-            btnDatos.setBorder(BorderFactory.createEmptyBorder());
-            btnDatos.setContentAreaFilled(false);
-            btnDatos.setFocusPainted(false);
-            btnDatos.setOpaque(false);
-            btnDatos.setToolTipText("Clientes");
-            btnDatos.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        }
-        getContentPane().add(btnDatos);
-
-        btnDatos.addActionListener(e -> {
-            try {
-                WindowState.switchTo(this, new Datos());
-            } catch (Throwable ignore) {
-                dispose();
-            }
-        });
-
-        btnAgregar = new JButton("Agregar");
-        btnAgregar.setFont(new Font("Poppins", Font.BOLD,16));
-        btnAgregar.setBackground(new Color(163, 231, 214));
-        btnAgregar.setForeground(Color.BLACK);
-        btnAgregar.setFocusPainted(false);
-        getContentPane().add(btnAgregar);
-
-        btnModificar = new JButton("Modificar");
-        btnModificar.setFont(new Font("Poppins", Font.BOLD,16));
-        btnModificar.setBackground(new Color(218, 194, 254));
-        btnModificar.setForeground(Color.BLACK);
-        btnModificar.setFocusPainted(false);
-        getContentPane().add(btnModificar);
-
-        btnEliminar = new JButton("Eliminar");
-        btnEliminar.setFont(new Font("Poppins", Font.BOLD,16));
-        btnEliminar.setBackground(new Color(229, 115, 115));
-        btnEliminar.setForeground(Color.BLACK);
-        btnEliminar.setFocusPainted(false);
-        getContentPane().add(btnEliminar);
-
-        ImageIcon iconCambios      = scaledIcon(CambiosIcono, 44, 44);
-        ImageIcon iconCambiosOver  = scaledIcon(CambiosIcono, 48, 48);
-        ImageIcon iconCambiosPress = scaledIcon(CambiosIcono, 42, 42);
-
-        if (iconCambios == null) {
-            btnModificaciones = new JButton("Cambios");
-            btnModificaciones.setFont(new Font("Poppins", Font.BOLD,16));
-            btnModificaciones.setBackground(new Color(229, 115, 115));
-            btnModificaciones.setForeground(Color.BLACK);
-        } else {
-            btnModificaciones = new JButton(iconCambios);
-            if (iconCambiosOver  != null) btnModificaciones.setRolloverIcon(iconCambiosOver);
-            if (iconCambiosPress != null) btnModificaciones.setPressedIcon(iconCambiosPress);
-            btnModificaciones.setBorder(BorderFactory.createEmptyBorder());
-            btnModificaciones.setContentAreaFilled(false);
-            btnModificaciones.setFocusPainted(false);
-            btnModificaciones.setOpaque(false);
-            btnModificaciones.setToolTipText("Ver modificaciones anteriores");
-            btnModificaciones.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        }
-
-        getContentPane().add(btnModificaciones);
-
-        btnModificaciones.addActionListener(e -> {
-            try {
-                WindowState.switchTo(this, new Modificaciones_Anteriores());
-            } catch (Throwable ignore) {
-                dispose();
-            }
-        });
-
-        // Botón Agregar: abre ventana Ingresar para nuevo registro
-        btnAgregar.addActionListener(e -> {
-            try {
-                WindowState.switchTo(this, new Ingresar());
-            } catch (Throwable ignore) {
-                dispose();
-            }
-        });
+        navegarA(btnDatos,          Datos::new);
+        navegarA(btnAgregar,        Ingresar::new);
+        navegarA(btnModificaciones, Modificaciones_Anteriores::new);
 
         btnModificar.addActionListener(e -> {
             int filaSeleccionada = tabla.getSelectedRow();
@@ -1534,6 +1448,47 @@ public class Registros extends JFrame {
             Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
             return new ImageIcon(scaled);
         } catch (IOException e) { e.printStackTrace(); return null; }
+    }
+
+    private JButton crearBotonTexto(String texto, Color bg, Color fg) {
+        JButton btn = new JButton(texto);
+        btn.setFont(new Font("Poppins", Font.BOLD, 16));
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFocusPainted(false);
+        getContentPane().add(btn);
+        return btn;
+    }
+
+    private JButton crearBotonIcono(String iconPath, String textoFallback,
+                                     Color bgFallback, Color fgFallback, String tooltip) {
+        ImageIcon icon      = scaledIcon(iconPath, 44, 44);
+        ImageIcon iconOver  = scaledIcon(iconPath, 48, 48);
+        ImageIcon iconPress = scaledIcon(iconPath, 42, 42);
+
+        if (icon == null) return crearBotonTexto(textoFallback, bgFallback, fgFallback);
+
+        JButton btn = new JButton(icon);
+        if (iconOver  != null) btn.setRolloverIcon(iconOver);
+        if (iconPress != null) btn.setPressedIcon(iconPress);
+        btn.setBorder(BorderFactory.createEmptyBorder());
+        btn.setContentAreaFilled(false);
+        btn.setFocusPainted(false);
+        btn.setOpaque(false);
+        btn.setToolTipText(tooltip);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        getContentPane().add(btn);
+        return btn;
+    }
+
+    private void navegarA(JButton btn, Supplier<? extends JFrame> destino) {
+        btn.addActionListener(e -> {
+            try {
+                WindowState.switchTo(this, destino.get());
+            } catch (Throwable ignore) {
+                dispose();
+            }
+        });
     }
 
     // ================== FILTROS POR COLUMNA (header) ======
