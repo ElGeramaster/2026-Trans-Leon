@@ -108,6 +108,7 @@ public class Registros extends JFrame {
     private JLabel logoLabel;
     private static final String LOGOImagen = "/GestionSoftware/imagenes/LogoLeon.png";
     private static final String CambiosIcono = "/GestionSoftware/imagenes/Cambios.png";
+    private static final String DatosIcono   = "/GestionSoftware/imagenes/DATOS.png";
 
     // Locale
     private static final java.util.Locale LOCALE_ES_MX = new java.util.Locale("es","MX");
@@ -509,11 +510,27 @@ public class Registros extends JFrame {
 
         initSugerencias();
 
-        btnDatos = new JButton("Clientes");
-        btnDatos.setFont(new Font("Poppins", Font.BOLD,16));
-        btnDatos.setBackground(new Color(192, 192, 192));
-        btnDatos.setForeground(Color.WHITE);
-        btnDatos.setFocusPainted(false);
+        ImageIcon iconDatos      = scaledIcon(DatosIcono, 44, 44);
+        ImageIcon iconDatosOver  = scaledIcon(DatosIcono, 48, 48);
+        ImageIcon iconDatosPress = scaledIcon(DatosIcono, 42, 42);
+
+        if (iconDatos == null) {
+            btnDatos = new JButton("Clientes");
+            btnDatos.setFont(new Font("Poppins", Font.BOLD,16));
+            btnDatos.setBackground(new Color(192, 192, 192));
+            btnDatos.setForeground(Color.WHITE);
+            btnDatos.setFocusPainted(false);
+        } else {
+            btnDatos = new JButton(iconDatos);
+            if (iconDatosOver  != null) btnDatos.setRolloverIcon(iconDatosOver);
+            if (iconDatosPress != null) btnDatos.setPressedIcon(iconDatosPress);
+            btnDatos.setBorder(BorderFactory.createEmptyBorder());
+            btnDatos.setContentAreaFilled(false);
+            btnDatos.setFocusPainted(false);
+            btnDatos.setOpaque(false);
+            btnDatos.setToolTipText("Clientes");
+            btnDatos.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        }
         getContentPane().add(btnDatos);
 
         btnDatos.addActionListener(e -> {
@@ -1779,17 +1796,18 @@ public class Registros extends JFrame {
         int btnW = 150;
         int gap = 30;
 
+        int wDatos   = (btnDatos != null && btnDatos.getIcon() != null) ? 56 : btnW;
         int wCambios = (btnModificaciones != null && btnModificaciones.getIcon() != null) ? 56 : btnW;
 
-        int totalNormal = btnW * 4 + gap * 3 + wCambios + gap;
+        int totalNormal = wDatos + gap + btnW * 3 + gap * 3 + wCambios;
         int startX = Math.max(10, (w - totalNormal) / 2);
 
-        if (btnDatos != null)        btnDatos.setBounds(startX,                        btnY, btnW, btnH);
-        if (btnAgregar != null)      btnAgregar.setBounds(startX + (btnW + gap),       btnY, btnW, btnH);
-        if (btnModificar != null)    btnModificar.setBounds(startX + (btnW + gap) * 2, btnY, btnW, btnH);
-        if (btnEliminar != null)     btnEliminar.setBounds(startX + (btnW + gap) * 3, btnY, btnW, btnH);
-        if (btnModificaciones != null)
-            btnModificaciones.setBounds(startX + (btnW + gap) * 4, btnY, wCambios, btnH);
+        int xCursor = startX;
+        if (btnDatos != null)        { btnDatos.setBounds(xCursor, btnY, wDatos, btnH);           xCursor += wDatos + gap; }
+        if (btnAgregar != null)      { btnAgregar.setBounds(xCursor, btnY, btnW, btnH);           xCursor += btnW + gap; }
+        if (btnModificar != null)    { btnModificar.setBounds(xCursor, btnY, btnW, btnH);         xCursor += btnW + gap; }
+        if (btnEliminar != null)     { btnEliminar.setBounds(xCursor, btnY, btnW, btnH);          xCursor += btnW + gap; }
+        if (btnModificaciones != null) btnModificaciones.setBounds(xCursor, btnY, wCambios, btnH);
 
         cp.revalidate();
         cp.repaint();
