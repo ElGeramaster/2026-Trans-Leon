@@ -53,7 +53,7 @@ public class Datos extends JFrame {
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
 
     public Datos() {
-        setTitle("Gestión de Contactos");
+        setTitle("Datos Adicionales");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(1600, 900);
         setLocationRelativeTo(null);
@@ -87,8 +87,8 @@ public class Datos extends JFrame {
         panelBoton.add(B1);
         topBar.add(panelBoton, BorderLayout.WEST);
 
-        JLabel titulo = new JLabel("Gestión de Contactos", SwingConstants.CENTER);
-        titulo.setFont(new Font("Poppins", Font.BOLD, 25));
+        JLabel titulo = new JLabel("Datos Adicionales", SwingConstants.CENTER);
+        titulo.setFont(new Font("Poppins", Font.BOLD, 35));
         titulo.setForeground(Color.WHITE);
         topBar.add(titulo, BorderLayout.CENTER);
 
