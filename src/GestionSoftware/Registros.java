@@ -1744,8 +1744,13 @@ public class Registros extends JFrame {
             cbMostrarColumnas.setBounds(670 + filtroLabelW + 6, 80, filtroComboW, filaFiltrosH);
         }
 
-        if (lblBuscarLabel != null) lblBuscarLabel.setBounds(1100, 85, 60, 20);
-        if (txtBuscar != null) txtBuscar.setBounds(1170, 80, 220, filaFiltrosH);
+        int buscarFieldW = 220;
+        int buscarLabelW = 60;
+        int buscarMargin = 10;
+        int buscarFieldX = w - buscarMargin - buscarFieldW;
+        int buscarLabelX = buscarFieldX - 6 - buscarLabelW;
+        if (lblBuscarLabel != null) lblBuscarLabel.setBounds(buscarLabelX, 85, buscarLabelW, 20);
+        if (txtBuscar != null) txtBuscar.setBounds(buscarFieldX, 80, buscarFieldW, filaFiltrosH);
 
         if (scrollPane != null) scrollPane.setBounds(10, tablaY, w - 20, tablaH);
 
