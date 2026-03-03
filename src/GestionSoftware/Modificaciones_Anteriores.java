@@ -123,12 +123,12 @@ public class Modificaciones_Anteriores extends JFrame {
         titulosPanel.setOpaque(false);
 
         lblTitulo = new JLabel("HISTORIAL DE MODIFICACIONES");
-        lblTitulo.setFont(new Font("Poppins", Font.BOLD, 28));
+        lblTitulo.setFont(AppConfig.font(Font.BOLD, 28));
         lblTitulo.setForeground(new Color(44, 62, 80));
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         lblSubtitulo = new JLabel("Consulta y gestiona los cambios realizados en el sistema");
-        lblSubtitulo.setFont(new Font("Poppins", Font.PLAIN, 14));
+        lblSubtitulo.setFont(AppConfig.font(Font.PLAIN, 14));
         lblSubtitulo.setForeground(new Color(127, 140, 141));
         lblSubtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -163,7 +163,7 @@ public class Modificaciones_Anteriores extends JFrame {
         controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 5));
 
         // Estilo para labels
-        Font labelFont = new Font("Poppins", Font.BOLD, 13);
+        Font labelFont = AppConfig.font(Font.BOLD, 13);
         Color labelColor = new Color(52, 73, 94);
 
         JLabel lblRango = new JLabel("Período:");
@@ -173,7 +173,7 @@ public class Modificaciones_Anteriores extends JFrame {
         cbRango = new JComboBox<>(new String[] { 
             "Esta semana", "Este mes", "Este año", "Todo" 
         });
-        cbRango.setFont(new Font("Poppins", Font.PLAIN, 13));
+        cbRango.setFont(AppConfig.font(Font.PLAIN, 13));
         cbRango.setPreferredSize(new Dimension(150, 35));
         cbRango.setFocusable(false);
         cbRango.setBackground(Color.WHITE);
@@ -186,7 +186,7 @@ public class Modificaciones_Anteriores extends JFrame {
         cbTipo = new JComboBox<>(new String[] { 
             "Ver todo", "Agregados", "Eliminados", "Modificados" 
         });
-        cbTipo.setFont(new Font("Poppins", Font.PLAIN, 13));
+        cbTipo.setFont(AppConfig.font(Font.PLAIN, 13));
         cbTipo.setPreferredSize(new Dimension(150, 35));
         cbTipo.setFocusable(false);
         cbTipo.setBackground(Color.WHITE);
@@ -224,7 +224,7 @@ public class Modificaciones_Anteriores extends JFrame {
 
         tabla = new JTable(modelo);
         tabla.setRowHeight(32);
-        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tabla.setFont(AppConfig.font(Font.PLAIN, 14));
         tabla.setBackground(Color.WHITE);
         tabla.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tabla.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -235,7 +235,7 @@ public class Modificaciones_Anteriores extends JFrame {
         tabla.setShowHorizontalLines(true);
 
         JTableHeader header = tabla.getTableHeader();
-        header.setFont(new Font("Poppins", Font.BOLD, 14));
+        header.setFont(AppConfig.font(Font.BOLD, 14));
         header.setBackground(new Color(236, 240, 241));
         header.setForeground(new Color(44, 62, 80));
         header.setPreferredSize(new Dimension(header.getWidth(), 45));
@@ -301,7 +301,7 @@ public class Modificaciones_Anteriores extends JFrame {
 
     private JButton crearBotonModerno(String texto, Color color) {
         JButton btn = new JButton(texto);
-        btn.setFont(new Font("Poppins", Font.BOLD, 13));
+        btn.setFont(AppConfig.font(Font.BOLD, 13));
         btn.setBackground(color);
         btn.setForeground(Color.WHITE);
         btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
@@ -682,7 +682,7 @@ public class Modificaciones_Anteriores extends JFrame {
         ta.setWrapStyleWord(true);
         ta.setLineWrap(true);
         ta.setEditable(false);
-        ta.setFont(new Font("Consolas", Font.PLAIN, 13));
+        ta.setFont(AppConfig.font(Font.PLAIN, 13));
         ta.setBackground(new Color(248, 249, 250));
         ta.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         

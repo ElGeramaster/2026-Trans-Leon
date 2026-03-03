@@ -431,7 +431,7 @@ public class Ingresar extends JFrame {
         t.setOpaque(true);
         t.setBackground(Color.white);
         t.setForeground(Color.BLACK);
-        t.setFont(new Font("Poppins", Font.BOLD, 20));
+        t.setFont(AppConfig.font(Font.BOLD, 20));
         t.setColumns(28);
         return t;
     }
@@ -439,7 +439,7 @@ public class Ingresar extends JFrame {
     private static JTextArea ta(String title) {
         JTextArea t = new JTextArea(7, 80);
         t.setBorder(titled(title));
-        t.setFont(new Font("Poppins", Font.BOLD, 20));
+        t.setFont(AppConfig.font(Font.BOLD, 20));
         t.setForeground(Color.BLACK);
         t.setLineWrap(true);
         t.setWrapStyleWord(true);
@@ -476,7 +476,7 @@ public class Ingresar extends JFrame {
         c.gridy = 0;
 
         for (JComponent comp : comps) {
-            comp.setFont(new Font("Poppins", Font.BOLD, 22));
+            comp.setFont(AppConfig.font(Font.BOLD, 22));
 
             boolean fullRow = "FULL_ROW".equals(comp.getName());
             if (fullRow) {
@@ -715,7 +715,7 @@ public class Ingresar extends JFrame {
         lbl.setFont(POP14B);
 
         JTextField tfId = new JTextField();
-        tfId.setFont(new Font("Poppins", Font.BOLD, 18));
+        tfId.setFont(AppConfig.font(Font.BOLD, 18));
         tfId.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
                 BorderFactory.createEmptyBorder(8, 10, 8, 10)

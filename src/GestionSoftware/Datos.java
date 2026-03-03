@@ -88,7 +88,7 @@ public class Datos extends JFrame {
         topBar.add(panelBoton, BorderLayout.WEST);
 
         JLabel titulo = new JLabel("Datos Adicionales", SwingConstants.CENTER);
-        titulo.setFont(new Font("Poppins", Font.BOLD, 35));
+        titulo.setFont(AppConfig.font(Font.BOLD, 35));
         titulo.setForeground(Color.WHITE);
         topBar.add(titulo, BorderLayout.CENTER);
 
@@ -121,7 +121,7 @@ public class Datos extends JFrame {
 
         // ====== TABS ======
         tabs = new JTabbedPane();
-        tabs.setFont(new Font("Poppins", Font.BOLD, 14));
+        tabs.setFont(AppConfig.font(Font.BOLD, 14));
         tabs.setBackground(Color.WHITE);
         tabs.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -304,24 +304,24 @@ public class Datos extends JFrame {
             // Fila 0: Selector
             c.gridx = 0; c.gridy = 0; c.weightx = 0;
             JLabel lbl = new JLabel(" Seleccionar " + etiqueta + ":");
-            lbl.setFont(new Font("Poppins", Font.BOLD, 14));
+            lbl.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lbl, c);
 
             c.gridx = 1; c.gridy = 0; c.weightx = 1.0;
             cbEntidad = new JComboBox<>();
-            cbEntidad.setFont(new Font("Poppins", Font.PLAIN, 14));
+            cbEntidad.setFont(AppConfig.font(Font.PLAIN, 14));
             cbEntidad.setPreferredSize(new Dimension(400, 32));
             form.add(cbEntidad, c);
 
             c.gridx = 2; c.gridy = 0; c.weightx = 0;
             lblUsoCount = new JLabel("");
-            lblUsoCount.setFont(new Font("Poppins", Font.BOLD, 12));
+            lblUsoCount.setFont(AppConfig.font(Font.BOLD, 12));
             lblUsoCount.setForeground(new Color(127, 140, 141));
             form.add(lblUsoCount, c);
 
             c.gridx = 3; c.gridy = 0; c.weightx = 0;
             JButton btnRecargar = new JButton("↻ Recargar");
-            btnRecargar.setFont(new Font("Poppins", Font.BOLD, 13));
+            btnRecargar.setFont(AppConfig.font(Font.BOLD, 13));
             btnRecargar.setBackground(colorTema);
             btnRecargar.setForeground(Color.WHITE);
             btnRecargar.setFocusPainted(false);
@@ -333,12 +333,12 @@ public class Datos extends JFrame {
             // NUEVA Fila 1: Campo para editar nombre
             c.gridx = 0; c.gridy = 1; c.weightx = 0; c.gridwidth = 1;
             JLabel lNombre = new JLabel("✏️ Editar Nombre:");
-            lNombre.setFont(new Font("Poppins", Font.BOLD, 14));
+            lNombre.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lNombre, c);
 
             c.gridx = 1; c.gridy = 1; c.weightx = 1.0; c.gridwidth = 2;
             tfNombreNuevo = new JTextField();
-            tfNombreNuevo.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfNombreNuevo.setFont(AppConfig.font(Font.PLAIN, 14));
             tfNombreNuevo.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -348,7 +348,7 @@ public class Datos extends JFrame {
 
             c.gridx = 3; c.gridy = 1; c.weightx = 0; c.gridwidth = 1;
             JButton btnActualizarNombre = new JButton("💾 Actualizar Nombre");
-            btnActualizarNombre.setFont(new Font("Poppins", Font.BOLD, 13));
+            btnActualizarNombre.setFont(AppConfig.font(Font.BOLD, 13));
             btnActualizarNombre.setBackground(new Color(230, 126, 34));
             btnActualizarNombre.setForeground(Color.WHITE);
             btnActualizarNombre.setFocusPainted(false);
@@ -361,12 +361,12 @@ public class Datos extends JFrame {
             // Fila 2: Teléfono
             c.gridx = 0; c.gridy = 2; c.weightx = 0; c.gridwidth = 1;
             JLabel lTel = new JLabel("📞 Teléfono:");
-            lTel.setFont(new Font("Poppins", Font.BOLD, 14));
+            lTel.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lTel, c);
 
             c.gridx = 1; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0;
             tfTelefono = new JTextField();
-            tfTelefono.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfTelefono.setFont(AppConfig.font(Font.PLAIN, 14));
             tfTelefono.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -376,12 +376,12 @@ public class Datos extends JFrame {
             // Fila 3: Correo
             c.gridx = 0; c.gridy = 3; c.gridwidth = 1; c.weightx = 0;
             JLabel lCor = new JLabel("📧 Correo:");
-            lCor.setFont(new Font("Poppins", Font.BOLD, 14));
+            lCor.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lCor, c);
 
             c.gridx = 1; c.gridy = 3; c.gridwidth = 3; c.weightx = 1.0;
             tfCorreo = new JTextField();
-            tfCorreo.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfCorreo.setFont(AppConfig.font(Font.PLAIN, 14));
             tfCorreo.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -391,12 +391,12 @@ public class Datos extends JFrame {
             // Fila 4: Dirección
             c.gridx = 0; c.gridy = 4; c.gridwidth = 1; c.weightx = 0;
             JLabel lDir = new JLabel("📍 Dirección:");
-            lDir.setFont(new Font("Poppins", Font.BOLD, 14));
+            lDir.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lDir, c);
 
             c.gridx = 1; c.gridy = 4; c.gridwidth = 3; c.weightx = 1.0;
             taDireccion = new JTextArea(3, 20);
-            taDireccion.setFont(new Font("Poppins", Font.PLAIN, 14));
+            taDireccion.setFont(AppConfig.font(Font.PLAIN, 14));
             taDireccion.setLineWrap(true);
             taDireccion.setWrapStyleWord(true);
             taDireccion.setBorder(BorderFactory.createCompoundBorder(
@@ -413,7 +413,7 @@ public class Datos extends JFrame {
             acciones.setOpaque(false);
 
             JButton btnGuardar = new JButton("💾 Guardar cambios");
-            btnGuardar.setFont(new Font("Poppins", Font.BOLD, 14));
+            btnGuardar.setFont(AppConfig.font(Font.BOLD, 14));
             btnGuardar.setBackground(new Color(39, 174, 96));
             btnGuardar.setForeground(Color.WHITE);
             btnGuardar.setFocusPainted(false);
@@ -422,7 +422,7 @@ public class Datos extends JFrame {
             btnGuardar.addActionListener(e -> guardarCambios());
 
             JButton btnLimpiar = new JButton("🧹 Limpiar");
-            btnLimpiar.setFont(new Font("Poppins", Font.BOLD, 14));
+            btnLimpiar.setFont(AppConfig.font(Font.BOLD, 14));
             btnLimpiar.setBackground(new Color(241, 196, 15));
             btnLimpiar.setForeground(Color.WHITE);
             btnLimpiar.setFocusPainted(false);
@@ -431,7 +431,7 @@ public class Datos extends JFrame {
             btnLimpiar.addActionListener(e -> limpiarCampos());
 
             JButton btnEliminar = new JButton("🗑 Eliminar sin uso");
-            btnEliminar.setFont(new Font("Poppins", Font.BOLD, 14));
+            btnEliminar.setFont(AppConfig.font(Font.BOLD, 14));
             btnEliminar.setBackground(new Color(231, 76, 60));
             btnEliminar.setForeground(Color.WHITE);
             btnEliminar.setFocusPainted(false);
@@ -466,11 +466,11 @@ public class Datos extends JFrame {
             ));
 
             JLabel lb = new JLabel("🔍 Buscar:");
-            lb.setFont(new Font("Poppins", Font.BOLD, 13));
+            lb.setFont(AppConfig.font(Font.BOLD, 13));
             filtros.add(lb);
 
             tfBuscar = new JTextField(28);
-            tfBuscar.setFont(new Font("Poppins", Font.PLAIN, 13));
+            tfBuscar.setFont(AppConfig.font(Font.PLAIN, 13));
             tfBuscar.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -478,7 +478,7 @@ public class Datos extends JFrame {
             filtros.add(tfBuscar);
 
             chkSoloConUso = new JCheckBox("Solo con cartas de porte activas");
-            chkSoloConUso.setFont(new Font("Poppins", Font.PLAIN, 13));
+            chkSoloConUso.setFont(AppConfig.font(Font.PLAIN, 13));
             chkSoloConUso.setOpaque(false);
             chkSoloConUso.addActionListener(e -> cargarListaYTabla());
             filtros.add(chkSoloConUso);
@@ -497,13 +497,13 @@ public class Datos extends JFrame {
 
             table = new JTable(model);
             table.setRowHeight(28);
-            table.setFont(new Font("Poppins", Font.PLAIN, 13));
+            table.setFont(AppConfig.font(Font.PLAIN, 13));
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.setShowGrid(true);
             table.setGridColor(new Color(220, 220, 220));
 
             JTableHeader header = table.getTableHeader();
-            header.setFont(new Font("Poppins", Font.BOLD, 13));
+            header.setFont(AppConfig.font(Font.BOLD, 13));
             header.setBackground(colorTema);
             header.setForeground(Color.WHITE);
             header.setPreferredSize(new Dimension(header.getPreferredSize().width, 35));
@@ -530,7 +530,7 @@ public class Datos extends JFrame {
                         }
                     }
                     setHorizontalAlignment(SwingConstants.CENTER);
-                    setFont(new Font("Poppins", Font.BOLD, 12));
+                    setFont(AppConfig.font(Font.BOLD, 12));
                     return c;
                 }
             });
@@ -1051,30 +1051,30 @@ public class Datos extends JFrame {
             // Fila 0: Selector
             c.gridx = 0; c.gridy = 0; c.weightx = 0; c.gridwidth = 1;
             JLabel lSel = new JLabel(" Seleccionar " + etiqueta + ":");
-            lSel.setFont(new Font("Poppins", Font.BOLD, 14));
+            lSel.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lSel, c);
 
             c.gridx = 1; c.gridy = 0; c.weightx = 1.0; c.gridwidth = 2;
             cbVehiculo = new JComboBox<>();
-            cbVehiculo.setFont(new Font("Poppins", Font.PLAIN, 14));
+            cbVehiculo.setFont(AppConfig.font(Font.PLAIN, 14));
             cbVehiculo.setPreferredSize(new Dimension(400, 32));
             form.add(cbVehiculo, c);
 
             c.gridx = 3; c.gridy = 0; c.weightx = 0; c.gridwidth = 1;
             lblUsoCount = new JLabel("");
-            lblUsoCount.setFont(new Font("Poppins", Font.BOLD, 12));
+            lblUsoCount.setFont(AppConfig.font(Font.BOLD, 12));
             lblUsoCount.setForeground(new Color(127, 140, 141));
             form.add(lblUsoCount, c);
 
             // Fila 1: Editar Placa
             c.gridx = 0; c.gridy = 1; c.weightx = 0; c.gridwidth = 1;
             JLabel lPlaca = new JLabel("✏️ Editar Placa:");
-            lPlaca.setFont(new Font("Poppins", Font.BOLD, 14));
+            lPlaca.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lPlaca, c);
 
             c.gridx = 1; c.gridy = 1; c.weightx = 1.0; c.gridwidth = 2;
             tfPlacaNueva = new JTextField();
-            tfPlacaNueva.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfPlacaNueva.setFont(AppConfig.font(Font.PLAIN, 14));
             tfPlacaNueva.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -1084,7 +1084,7 @@ public class Datos extends JFrame {
 
             c.gridx = 3; c.gridy = 1; c.weightx = 0; c.gridwidth = 1;
             JButton btnActPlaca = new JButton("💾 Actualizar Placa");
-            btnActPlaca.setFont(new Font("Poppins", Font.BOLD, 13));
+            btnActPlaca.setFont(AppConfig.font(Font.BOLD, 13));
             btnActPlaca.setBackground(new Color(230, 126, 34));
             btnActPlaca.setForeground(Color.WHITE);
             btnActPlaca.setFocusPainted(false);
@@ -1097,12 +1097,12 @@ public class Datos extends JFrame {
             // Fila 2: Marca y Modelo
             c.gridx = 0; c.gridy = 2; c.weightx = 0; c.gridwidth = 1;
             JLabel lMarca = new JLabel("🏭 Marca:");
-            lMarca.setFont(new Font("Poppins", Font.BOLD, 14));
+            lMarca.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lMarca, c);
 
             c.gridx = 1; c.gridy = 2; c.weightx = 1.0; c.gridwidth = 1;
             tfMarca = new JTextField();
-            tfMarca.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfMarca.setFont(AppConfig.font(Font.PLAIN, 14));
             tfMarca.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -1111,12 +1111,12 @@ public class Datos extends JFrame {
 
             c.gridx = 2; c.gridy = 2; c.weightx = 0; c.gridwidth = 1;
             JLabel lModelo = new JLabel("📋 Modelo:");
-            lModelo.setFont(new Font("Poppins", Font.BOLD, 14));
+            lModelo.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lModelo, c);
 
             c.gridx = 3; c.gridy = 2; c.weightx = 1.0; c.gridwidth = 1;
             tfModelo = new JTextField();
-            tfModelo.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfModelo.setFont(AppConfig.font(Font.PLAIN, 14));
             tfModelo.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -1126,12 +1126,12 @@ public class Datos extends JFrame {
             // Fila 3: Año y Color
             c.gridx = 0; c.gridy = 3; c.weightx = 0; c.gridwidth = 1;
             JLabel lAnio = new JLabel("📅 Año:");
-            lAnio.setFont(new Font("Poppins", Font.BOLD, 14));
+            lAnio.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lAnio, c);
 
             c.gridx = 1; c.gridy = 3; c.weightx = 1.0; c.gridwidth = 1;
             tfAnio = new JTextField();
-            tfAnio.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfAnio.setFont(AppConfig.font(Font.PLAIN, 14));
             tfAnio.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -1140,12 +1140,12 @@ public class Datos extends JFrame {
 
             c.gridx = 2; c.gridy = 3; c.weightx = 0; c.gridwidth = 1;
             JLabel lColor = new JLabel("🎨 Color:");
-            lColor.setFont(new Font("Poppins", Font.BOLD, 14));
+            lColor.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lColor, c);
 
             c.gridx = 3; c.gridy = 3; c.weightx = 1.0; c.gridwidth = 1;
             tfColor = new JTextField();
-            tfColor.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfColor.setFont(AppConfig.font(Font.PLAIN, 14));
             tfColor.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -1155,12 +1155,12 @@ public class Datos extends JFrame {
             // Fila 4: Número económico y Estado
             c.gridx = 0; c.gridy = 4; c.weightx = 0; c.gridwidth = 1;
             JLabel lNumEco = new JLabel("🔑 Núm. Económico:");
-            lNumEco.setFont(new Font("Poppins", Font.BOLD, 14));
+            lNumEco.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lNumEco, c);
 
             c.gridx = 1; c.gridy = 4; c.weightx = 1.0; c.gridwidth = 1;
             tfNumEconomico = new JTextField();
-            tfNumEconomico.setFont(new Font("Poppins", Font.PLAIN, 14));
+            tfNumEconomico.setFont(AppConfig.font(Font.PLAIN, 14));
             tfNumEconomico.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -1169,12 +1169,12 @@ public class Datos extends JFrame {
 
             c.gridx = 2; c.gridy = 4; c.weightx = 0; c.gridwidth = 1;
             JLabel lEstado = new JLabel("⚙️ Estado:");
-            lEstado.setFont(new Font("Poppins", Font.BOLD, 14));
+            lEstado.setFont(AppConfig.font(Font.BOLD, 14));
             form.add(lEstado, c);
 
             c.gridx = 3; c.gridy = 4; c.weightx = 1.0; c.gridwidth = 1;
             cbEstado = new JComboBox<>(new String[]{"ACTIVO", "MANTENIMIENTO", "BAJA"});
-            cbEstado.setFont(new Font("Poppins", Font.PLAIN, 14));
+            cbEstado.setFont(AppConfig.font(Font.PLAIN, 14));
             cbEstado.setPreferredSize(new Dimension(200, 32));
             form.add(cbEstado, c);
 
@@ -1183,7 +1183,7 @@ public class Datos extends JFrame {
             acciones.setOpaque(false);
 
             JButton btnGuardar = new JButton("💾 Guardar cambios");
-            btnGuardar.setFont(new Font("Poppins", Font.BOLD, 14));
+            btnGuardar.setFont(AppConfig.font(Font.BOLD, 14));
             btnGuardar.setBackground(new Color(39, 174, 96));
             btnGuardar.setForeground(Color.WHITE);
             btnGuardar.setFocusPainted(false);
@@ -1192,7 +1192,7 @@ public class Datos extends JFrame {
             btnGuardar.addActionListener(e -> guardarCambios());
 
             JButton btnLimpiar = new JButton("🧹 Limpiar");
-            btnLimpiar.setFont(new Font("Poppins", Font.BOLD, 14));
+            btnLimpiar.setFont(AppConfig.font(Font.BOLD, 14));
             btnLimpiar.setBackground(new Color(241, 196, 15));
             btnLimpiar.setForeground(Color.WHITE);
             btnLimpiar.setFocusPainted(false);
@@ -1201,7 +1201,7 @@ public class Datos extends JFrame {
             btnLimpiar.addActionListener(e -> limpiarCampos());
 
             JButton btnEliminar = new JButton("🗑 Eliminar sin uso");
-            btnEliminar.setFont(new Font("Poppins", Font.BOLD, 14));
+            btnEliminar.setFont(AppConfig.font(Font.BOLD, 14));
             btnEliminar.setBackground(new Color(231, 76, 60));
             btnEliminar.setForeground(Color.WHITE);
             btnEliminar.setFocusPainted(false);
@@ -1211,7 +1211,7 @@ public class Datos extends JFrame {
             btnEliminar.addActionListener(e -> eliminarSinUso());
 
             JButton btnRecargar = new JButton("↻ Recargar");
-            btnRecargar.setFont(new Font("Poppins", Font.BOLD, 14));
+            btnRecargar.setFont(AppConfig.font(Font.BOLD, 14));
             btnRecargar.setBackground(colorTema);
             btnRecargar.setForeground(Color.WHITE);
             btnRecargar.setFocusPainted(false);
@@ -1245,11 +1245,11 @@ public class Datos extends JFrame {
             ));
 
             JLabel lb = new JLabel("🔍 Buscar:");
-            lb.setFont(new Font("Poppins", Font.BOLD, 13));
+            lb.setFont(AppConfig.font(Font.BOLD, 13));
             filtros.add(lb);
 
             tfBuscar = new JTextField(28);
-            tfBuscar.setFont(new Font("Poppins", Font.PLAIN, 13));
+            tfBuscar.setFont(AppConfig.font(Font.PLAIN, 13));
             tfBuscar.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -1269,13 +1269,13 @@ public class Datos extends JFrame {
 
             table = new JTable(model);
             table.setRowHeight(28);
-            table.setFont(new Font("Poppins", Font.PLAIN, 13));
+            table.setFont(AppConfig.font(Font.PLAIN, 13));
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.setShowGrid(true);
             table.setGridColor(new Color(220, 220, 220));
 
             JTableHeader header = table.getTableHeader();
-            header.setFont(new Font("Poppins", Font.BOLD, 13));
+            header.setFont(AppConfig.font(Font.BOLD, 13));
             header.setBackground(colorTema);
             header.setForeground(Color.WHITE);
             header.setPreferredSize(new Dimension(header.getPreferredSize().width, 35));
@@ -1309,7 +1309,7 @@ public class Datos extends JFrame {
                         }
                     }
                     setHorizontalAlignment(SwingConstants.CENTER);
-                    setFont(new Font("Poppins", Font.BOLD, 12));
+                    setFont(AppConfig.font(Font.BOLD, 12));
                     return comp;
                 }
             });
@@ -1332,7 +1332,7 @@ public class Datos extends JFrame {
                         }
                     }
                     setHorizontalAlignment(SwingConstants.CENTER);
-                    setFont(new Font("Poppins", Font.BOLD, 12));
+                    setFont(AppConfig.font(Font.BOLD, 12));
                     return comp;
                 }
             });

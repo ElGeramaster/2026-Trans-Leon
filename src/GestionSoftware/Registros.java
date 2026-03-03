@@ -151,6 +151,8 @@ public class Registros extends JFrame {
     private JButton btnModificar;
     private JButton btnEliminar;
     private JButton btnModificaciones;
+    private JButton btnOpciones;
+    private final Runnable temaListener = this::reiniciarUI;
     
 
     // Sugerencias (autocompletado)
@@ -393,7 +395,7 @@ public class Registros extends JFrame {
         setMinimumSize(new Dimension(1100, 700));
         getContentPane().setLayout(null);
         setLocationRelativeTo(null);
-        getContentPane().setBackground(new Color(211,211,211));
+        getContentPane().setBackground(AppConfig.bgMain());
         setResizable(true);
 
         lblTitulo = new JLabel("ARCHIVO GENERAL DE VIAJES", SwingConstants.CENTER);
@@ -442,7 +444,7 @@ public class Registros extends JFrame {
 
         tabla = new JTable(modeloTabla);
         tabla.setRowHeight(24);
-        tabla.setFont(new Font("Arial", Font.BOLD, 12));
+        tabla.setFont(AppConfig.font(Font.BOLD, 12));
         tabla.setBackground(Color.WHITE);
         tabla.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tabla.setCellSelectionEnabled(true);
@@ -450,8 +452,8 @@ public class Registros extends JFrame {
         tabla.putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
 
         JTableHeader header = tabla.getTableHeader();
-        header.setFont(new Font("Poppins", Font.BOLD, 14));
-        header.setBackground(new Color(135, 206, 235));
+        header.setFont(AppConfig.font(Font.BOLD, 14));
+        header.setBackground(AppConfig.bgTableHeader());
         header.setReorderingAllowed(true);
         header.setResizingAllowed(true);
 
@@ -513,6 +515,21 @@ public class Registros extends JFrame {
         btnEliminar       = crearBotonTexto("Eliminar",   new Color(229,115,115), Color.BLACK);
         btnModificaciones = crearBotonIcono(CambiosIcono, "Cambios",  new Color(229,115,115), Color.BLACK, "Ver modificaciones anteriores");
      
+
+        btnOpciones = new JButton("⚙ Opciones");
+        btnOpciones.setFont(AppConfig.font(Font.BOLD, 13));
+        btnOpciones.setBackground(new Color(90, 90, 100));
+        btnOpciones.setForeground(Color.WHITE);
+        btnOpciones.setFocusPainted(false);
+        btnOpciones.addActionListener(e -> mostrarDialogoOpciones());
+        getContentPane().add(btnOpciones);
+
+        AppConfig.addListener(temaListener);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override public void windowClosed(java.awt.event.WindowEvent e) {
+                AppConfig.removeListener(temaListener);
+            }
+        });
 
         navegarA(btnDatos,          Datos::new);
         navegarA(btnAgregar,        Ingresar::new);
@@ -723,7 +740,7 @@ public class Registros extends JFrame {
 
     private void crearBarraBusqueda() {
         lblBuscarLabel = new JLabel("Buscar:");
-        lblBuscarLabel.setFont(new Font("Poppins", Font.BOLD, 14));
+        lblBuscarLabel.setFont(AppConfig.font(Font.BOLD, 14));
         getContentPane().add(lblBuscarLabel);
 
         txtBuscar = new JTextField();
@@ -858,7 +875,7 @@ public class Registros extends JFrame {
         cargarFiltrosPersonalizadosDesdeDB();
 
         lblFiltrarColsLabel = new JLabel("Filtrar Columnas:");
-        lblFiltrarColsLabel.setFont(new Font("Poppins", Font.BOLD, 14));
+        lblFiltrarColsLabel.setFont(AppConfig.font(Font.BOLD, 14));
         getContentPane().add(lblFiltrarColsLabel);
 
         cbMostrarColumnas = new JComboBox<>();
@@ -933,7 +950,7 @@ public class Registros extends JFrame {
         int row = 0;
 
         JCheckBox chkSeleccionarTodo = new JCheckBox("Seleccionar todo");
-        chkSeleccionarTodo.setFont(new Font("Poppins", Font.BOLD, 12));
+        chkSeleccionarTodo.setFont(AppConfig.font(Font.BOLD, 12));
         cc.gridx = 0;
         cc.gridy = row++;
         center.add(chkSeleccionarTodo, cc);
@@ -1455,7 +1472,7 @@ public class Registros extends JFrame {
 
     private JButton crearBotonTexto(String texto, Color bg, Color fg) {
         JButton btn = new JButton(texto);
-        btn.setFont(new Font("Poppins", Font.BOLD, 16));
+        btn.setFont(AppConfig.font(Font.BOLD, 16));
         btn.setBackground(bg);
         btn.setForeground(fg);
         btn.setFocusPainted(false);
@@ -1610,7 +1627,7 @@ public class Registros extends JFrame {
         root.add(bottom, BorderLayout.SOUTH);
 
         final JCheckBox chkTodo = new JCheckBox("Seleccionar todo");
-        chkTodo.setFont(new Font("Poppins", Font.BOLD, 12));
+        chkTodo.setFont(AppConfig.font(Font.BOLD, 12));
         listPanel.add(chkTodo);
 
         final java.util.List<JCheckBox> items = new ArrayList<>();
@@ -1772,6 +1789,9 @@ public class Registros extends JFrame {
         if (btnEliminar != null)       { btnEliminar.setBounds(xCursor, btnY, btnW, btnH);          xCursor += btnW + gap; }
         if (btnModificaciones != null) btnModificaciones.setBounds(xCursor, btnY, wCambios, btnH);
 
+        // Botón Opciones — esquina inferior derecha
+        if (btnOpciones != null) btnOpciones.setBounds(w - 150, btnY + (btnH - 36) / 2, 140, 36);
+
         cp.revalidate();
         cp.repaint();
     }
@@ -1806,6 +1826,128 @@ public class Registros extends JFrame {
         }
 
         SwingUtilities.invokeLater(this::ajustarLayout);
+    }
+
+    // ================== OPCIONES DE APARIENCIA ===========
+
+    private void reiniciarUI() {
+        SwingUtilities.invokeLater(() -> {
+            getContentPane().setBackground(AppConfig.bgMain());
+
+            if (tabla != null) {
+                tabla.setFont(AppConfig.font(Font.BOLD, 12));
+                tabla.setBackground(AppConfig.bgTableRow());
+                tabla.setForeground(AppConfig.fgText());
+                tabla.setGridColor(AppConfig.isDarkMode()
+                        ? new Color(70, 72, 75) : new Color(200, 200, 200));
+                javax.swing.table.JTableHeader th = tabla.getTableHeader();
+                th.setFont(AppConfig.font(Font.BOLD, 14));
+                th.setBackground(AppConfig.bgTableHeader());
+                th.setForeground(AppConfig.fgText());
+            }
+            if (scrollPane != null) {
+                scrollPane.getViewport().setBackground(AppConfig.bgTableRow());
+            }
+            if (lblBuscarLabel != null) {
+                lblBuscarLabel.setFont(AppConfig.font(Font.BOLD, 14));
+                lblBuscarLabel.setForeground(AppConfig.fgText());
+            }
+            if (txtBuscar != null) {
+                txtBuscar.setFont(AppConfig.font(Font.PLAIN, 14));
+                txtBuscar.setBackground(AppConfig.bgPanel());
+                txtBuscar.setForeground(AppConfig.fgText());
+                txtBuscar.setCaretColor(AppConfig.fgText());
+            }
+            if (lblFiltrarColsLabel != null) {
+                lblFiltrarColsLabel.setFont(AppConfig.font(Font.BOLD, 14));
+                lblFiltrarColsLabel.setForeground(AppConfig.fgText());
+            }
+            if (cbMostrarColumnas != null) {
+                cbMostrarColumnas.setFont(AppConfig.font(Font.PLAIN, 13));
+                cbMostrarColumnas.setBackground(AppConfig.bgPanel());
+                cbMostrarColumnas.setForeground(AppConfig.fgText());
+            }
+            if (cbFiltro != null) {
+                cbFiltro.setFont(AppConfig.font(Font.PLAIN, 13));
+                cbFiltro.setBackground(AppConfig.bgPanel());
+                cbFiltro.setForeground(AppConfig.fgText());
+            }
+            Font btnFont = AppConfig.font(Font.BOLD, 16);
+            if (btnAgregar        != null) btnAgregar.setFont(btnFont);
+            if (btnModificar      != null) btnModificar.setFont(btnFont);
+            if (btnEliminar       != null) btnEliminar.setFont(btnFont);
+            if (btnOpciones       != null) btnOpciones.setFont(AppConfig.font(Font.BOLD, 13));
+
+            getContentPane().repaint();
+            getContentPane().revalidate();
+        });
+    }
+
+    private void mostrarDialogoOpciones() {
+        JDialog dlg = new JDialog(this, "Opciones de apariencia", true);
+        dlg.setSize(340, 230);
+        dlg.setLocationRelativeTo(this);
+        dlg.setResizable(false);
+
+        JPanel root = new JPanel(new BorderLayout(10, 10));
+        root.setBackground(AppConfig.bgPanel());
+        root.setBorder(BorderFactory.createEmptyBorder(16, 20, 10, 20));
+        dlg.setContentPane(root);
+
+        // ─── Contenido ───────────────────────────────────────────────────
+        JPanel content = new JPanel(new java.awt.GridLayout(0, 1, 6, 8));
+        content.setBackground(AppConfig.bgPanel());
+
+        JLabel lblFuente = new JLabel("Tipografía:");
+        lblFuente.setFont(AppConfig.font(Font.BOLD, 14));
+        lblFuente.setForeground(AppConfig.fgText());
+        content.add(lblFuente);
+
+        String[] fuentes = {"Arial", "Poppins", "Calibri"};
+        JComboBox<String> cbFuente = new JComboBox<>(fuentes);
+        cbFuente.setSelectedItem(AppConfig.getFontName());
+        cbFuente.setFont(AppConfig.font(Font.PLAIN, 13));
+        cbFuente.setBackground(AppConfig.bgSecundario());
+        cbFuente.setForeground(AppConfig.fgText());
+        content.add(cbFuente);
+
+        JCheckBox chkOscuro = new JCheckBox("Modo oscuro (gris relajante)");
+        chkOscuro.setSelected(AppConfig.isDarkMode());
+        chkOscuro.setFont(AppConfig.font(Font.BOLD, 13));
+        chkOscuro.setBackground(AppConfig.bgPanel());
+        chkOscuro.setForeground(AppConfig.fgText());
+        content.add(chkOscuro);
+
+        root.add(content, BorderLayout.CENTER);
+
+        // ─── Botones ─────────────────────────────────────────────────────
+        JPanel pBotones = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 0));
+        pBotones.setBackground(AppConfig.bgPanel());
+
+        JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.setFont(AppConfig.font(Font.BOLD, 13));
+        btnCerrar.setBackground(new Color(130, 130, 140));
+        btnCerrar.setForeground(Color.WHITE);
+        btnCerrar.setFocusPainted(false);
+        btnCerrar.addActionListener(e -> dlg.dispose());
+
+        JButton btnAplicar = new JButton("Aplicar");
+        btnAplicar.setFont(AppConfig.font(Font.BOLD, 13));
+        btnAplicar.setBackground(new Color(60, 110, 180));
+        btnAplicar.setForeground(Color.WHITE);
+        btnAplicar.setFocusPainted(false);
+        btnAplicar.addActionListener(e -> {
+            AppConfig.setFontName((String) cbFuente.getSelectedItem());
+            AppConfig.setDarkMode(chkOscuro.isSelected());
+            // Actualizar colores del propio diálogo para que se vea el cambio
+            dlg.dispose();
+        });
+
+        pBotones.add(btnCerrar);
+        pBotones.add(btnAplicar);
+        root.add(pBotones, BorderLayout.SOUTH);
+
+        dlg.setVisible(true);
     }
 
     // ================== MAIN =============================

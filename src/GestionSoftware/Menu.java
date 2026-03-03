@@ -26,7 +26,7 @@ public class Menu extends JFrame {
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titlePanel.setOpaque(false);
         JLabel T1 = new JLabel("MENU DE CONSTANCIAS");
-        T1.setFont(new Font("Poppins", Font.BOLD, 40));
+        T1.setFont(AppConfig.font(Font.BOLD, 40));
         T1.setForeground(Color.BLACK);
         T1.setBorder(BorderFactory.createEmptyBorder(50, 10, 0, 00));
         titlePanel.add(T1);
@@ -92,7 +92,7 @@ public class Menu extends JFrame {
         button.setHorizontalTextPosition(SwingConstants.CENTER);
         button.setVerticalTextPosition(SwingConstants.BOTTOM);
         button.setToolTipText(etiqueta);
-        button.setFont(new Font("Poppins", Font.BOLD, 16));
+        button.setFont(AppConfig.font(Font.BOLD, 16));
         button.setForeground(Color.BLACK);
 
         button.setPreferredSize(new Dimension(300, 300));
