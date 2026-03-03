@@ -1,0 +1,15 @@
+# Archivos compilados de Java
+*.class
+
+# NetBeans build output
+build/
+dist/
+nbproject/private/
+
+# Logs y temporales
+*.log
+*.tmp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
