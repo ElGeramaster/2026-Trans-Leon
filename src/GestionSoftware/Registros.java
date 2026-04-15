@@ -164,8 +164,12 @@ public class Registros extends JFrame {
     // Layout
     private JLabel lblTitulo;
     private JButton B1;
+    private JButton btnSettings;
     private JLabel lblBuscarLabel;
     private JLabel lblFiltrarColsLabel;
+
+    // Listener de cambios de tema (registrado/desregistrado con la ventana)
+    private final Runnable themeListener = this::aplicarTema;
 
     // Pantalla completa
     private boolean fullScreen = false;
@@ -421,6 +425,11 @@ public class Registros extends JFrame {
             @Override public void mouseExited (MouseEvent evt) { B1.setBackground(Color.WHITE); }
         });
 
+        // ---- Boton de configuracion (parte izquierda superior, bajo el boton de regresar)
+        btnSettings = AppSettings.createSettingsButton(this);
+        btnSettings.setPreferredSize(new Dimension(60, 60));
+        getContentPane().add(btnSettings);
+
         JRootPane raizEsc = getRootPane();
         KeyStroke TeclaSalir = KeyStroke.getKeyStroke("ESCAPE");
         raizEsc.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(TeclaSalir, "ESCAPE");
@@ -577,7 +586,66 @@ public class Registros extends JFrame {
         instalarResponsiveUI();
         SwingUtilities.invokeLater(this::ajustarLayout);
         WindowState.installF11(this);
-        
+
+        // ---- Tema: aplicar estado actual y escuchar cambios ----
+        AppSettings.get().addChangeListener(themeListener);
+        addWindowListener(new WindowAdapter() {
+            @Override public void windowClosed(WindowEvent e) {
+                AppSettings.get().removeChangeListener(themeListener);
+            }
+        });
+        aplicarTema();
+    }
+
+    /** Aplica la paleta y el tamano de fuente actuales a los elementos principales. */
+    private void aplicarTema() {
+        AppSettings s = AppSettings.get();
+
+        getContentPane().setBackground(s.bg());
+
+        if (lblTitulo != null) {
+            lblTitulo.setFont(s.scaled("ethnocentric", Font.BOLD, 30));
+            lblTitulo.setForeground(s.fg());
+        }
+
+        if (btnSettings != null) {
+            AppSettings.aplicarEstiloGear(btnSettings);
+        }
+
+        if (lblBuscarLabel != null) {
+            lblBuscarLabel.setForeground(s.fg());
+            lblBuscarLabel.setFont(s.scaled("Poppins", Font.BOLD, 14));
+        }
+        if (lblFiltrarColsLabel != null) {
+            lblFiltrarColsLabel.setForeground(s.fg());
+            lblFiltrarColsLabel.setFont(s.scaled("Poppins", Font.BOLD, 14));
+        }
+        if (txtBuscar != null) {
+            txtBuscar.setFont(s.scaled("Poppins", Font.PLAIN, 14));
+        }
+
+        // Escalar fuentes de los botones principales (sin cambiar sus colores)
+        JButton[] principales = { btnDatos, btnAgregar, btnModificar, btnEliminar, btnModificaciones };
+        for (JButton b : principales) {
+            if (b == null) continue;
+            Font f = b.getFont();
+            if (f != null) {
+                int base = 14;
+                b.setFont(AppSettings.fontOrFallback(f.getFamily(), f.getStyle(), Math.round(base * s.scale())));
+            }
+        }
+
+        // Escalar fuente de la tabla y su encabezado
+        if (tabla != null) {
+            tabla.setFont(s.scaled("Arial", Font.BOLD, 12));
+            tabla.setRowHeight(Math.max(22, Math.round(24 * s.scale())));
+            if (tabla.getTableHeader() != null) {
+                tabla.getTableHeader().setFont(s.scaled("Poppins", Font.BOLD, 14));
+            }
+        }
+
+        revalidate();
+        repaint();
     }
 
     // ================== COPIAR / SELECCIONAR TEXTO ========
@@ -1724,6 +1792,9 @@ public class Registros extends JFrame {
         if (tablaH < 220) tablaH = 220;
 
         if (lblTitulo != null) lblTitulo.setBounds(0, 20, w, 50);
+
+        // Boton de configuracion justo debajo del boton "regresar"
+        if (btnSettings != null) btnSettings.setBounds(10, 80, 60, 60);
 
         int logoW = 130, logoH = 100;
 
