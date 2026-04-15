@@ -129,6 +129,13 @@ public class Ingresar extends JFrame {
     private JButton btnRegresar;
     private JLabel lblUltimaCp;
 
+    // Referencias para re-aplicar el tema dinamicamente
+    private JPanel headerPanel;
+    private JLabel tituloLabel;
+    private JTabbedPane tabsPane;
+    private JPanel footerPanel;
+    private final Runnable themeListener = this::aplicarTema;
+
     private ImageIcon CargarLogo(int heightPx) {
         java.net.URL url = Ingresar.class.getResource("/GestionSoftware/imagenes/LogoLeon.png");
         if (url == null) {
@@ -151,6 +158,7 @@ public class Ingresar extends JFrame {
         setResizable(true);
 
         JPanel header = new JPanel(new BorderLayout());
+        headerPanel = header;
         header.setBackground(new Color(186, 185, 181));
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 235, 240)));
 
@@ -166,6 +174,7 @@ public class Ingresar extends JFrame {
         B1.setMaximumSize(new Dimension(60, 60));
 
         JLabel titulo = new JLabel("AGREGAR UN NUEVO REGISTRO");
+        tituloLabel = titulo;
         titulo.setFont(POP18B);
         titulo.setForeground(new Color(0, 0, 0));
 
@@ -216,6 +225,7 @@ public class Ingresar extends JFrame {
         addHover(B1, new Color(225, 90, 90));
 
         JTabbedPane tabs = new JTabbedPane();
+        tabsPane = tabs;
         tabs.setFont(POP18B);
         tabs.setBackground(Color.white);
 
@@ -343,6 +353,7 @@ public class Ingresar extends JFrame {
         aCancel.setEditable(false);
 
         JPanel footer = new JPanel(new BorderLayout(10, 10));
+        footerPanel = footer;
         footer.setBackground(new Color(52, 57, 63));
 
         JLabel logoLeft = new JLabel();
@@ -421,8 +432,79 @@ public class Ingresar extends JFrame {
         cargarSugerenciasDesdeDB();
         instalarAutocompletadoEnCampos();
         actualizarLabelUltimaCp();
-        
+
         WindowState.installF11(this);
+
+        // ---- Tema: aplicar estado actual y escuchar cambios ----
+        AppSettings.get().addChangeListener(themeListener);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override public void windowClosed(java.awt.event.WindowEvent e) {
+                AppSettings.get().removeChangeListener(themeListener);
+            }
+        });
+        aplicarTema();
+    }
+
+    /**
+     * Aplica la paleta y el tamano de fuente actuales a la ventana de ingreso.
+     * El tamano se reajusta sobre la fuente "base" de cada componente (guardada
+     * en la primera visita via putClientProperty), para evitar que los cambios
+     * se acumulen en aplicaciones sucesivas.
+     */
+    private void aplicarTema() {
+        AppSettings s = AppSettings.get();
+        boolean dark = s.isDark();
+
+        getContentPane().setBackground(dark ? s.bg() : new Color(248, 250, 252));
+
+        if (headerPanel != null) {
+            headerPanel.setBackground(dark ? s.panel() : new Color(186, 185, 181));
+        }
+        if (tituloLabel != null) {
+            tituloLabel.setForeground(dark ? s.fg() : new Color(0, 0, 0));
+        }
+        if (lblUltimaCp != null) {
+            lblUltimaCp.setForeground(dark ? s.fg() : new Color(30, 30, 30));
+        }
+        if (tabsPane != null) {
+            tabsPane.setBackground(dark ? s.panel() : Color.white);
+            tabsPane.setForeground(s.fg());
+        }
+        if (footerPanel != null) {
+            footerPanel.setBackground(dark ? new Color(20, 22, 28) : new Color(52, 57, 63));
+        }
+
+        // Escalar fuentes en toda la jerarquia usando la fuente base guardada
+        escalarFuentesRecursivo(getContentPane(), s.scale());
+
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Recorre el arbol de componentes y, usando la fuente base que se guarda en
+     * la primera visita, escala el tamano segun el factor indicado. De este modo
+     * cambiar varias veces el tamano no produce una acumulacion de escalados.
+     */
+    private static void escalarFuentesRecursivo(Container c, float scale) {
+        if (c == null) return;
+        for (Component comp : c.getComponents()) {
+            if (comp instanceof JComponent) {
+                JComponent jc = (JComponent) comp;
+                Font base = (Font) jc.getClientProperty("appSettings.baseFont");
+                if (base == null && comp.getFont() != null) {
+                    base = comp.getFont();
+                    jc.putClientProperty("appSettings.baseFont", base);
+                }
+                if (base != null) {
+                    float newSize = Math.max(8f, base.getSize2D() * scale);
+                    comp.setFont(base.deriveFont(newSize));
+                }
+            }
+            if (comp instanceof Container) {
+                escalarFuentesRecursivo((Container) comp, scale);
+            }
+        }
     }
 
     private static JTextField tf(String title) {

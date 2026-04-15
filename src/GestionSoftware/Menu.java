@@ -11,7 +11,6 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Menu extends JFrame {
     private JButton BConsOrigen, BConsIdentidad;
-    private JButton btnSettings;
     private JLabel T1;
     private final Runnable themeListener = this::aplicarTema;
 
@@ -27,15 +26,6 @@ public class Menu extends JFrame {
         JPanel panelNorte = new JPanel(new BorderLayout());
         panelNorte.setOpaque(false);
 
-        // ---- Boton de configuracion (parte izquierda superior) ----
-        btnSettings = AppSettings.createSettingsButton(this);
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        leftPanel.setOpaque(false);
-        leftPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 0, 0));
-        leftPanel.add(btnSettings);
-        panelNorte.add(leftPanel, BorderLayout.WEST);
-
-        // ---- Titulo central ----
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titlePanel.setOpaque(false);
         T1 = new JLabel("MENU DE CONSTANCIAS");
@@ -148,10 +138,6 @@ public class Menu extends JFrame {
         if (T1 != null) {
             T1.setFont(s.scaled("Poppins", Font.BOLD, 40));
             T1.setForeground(s.fg());
-        }
-
-        if (btnSettings != null) {
-            AppSettings.aplicarEstiloGear(btnSettings);
         }
 
         JButton[] buttons = {BConsOrigen, BConsIdentidad};

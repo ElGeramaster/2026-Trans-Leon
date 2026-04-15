@@ -1793,9 +1793,6 @@ public class Registros extends JFrame {
 
         if (lblTitulo != null) lblTitulo.setBounds(0, 20, w, 50);
 
-        // Boton de configuracion justo debajo del boton "regresar"
-        if (btnSettings != null) btnSettings.setBounds(10, 80, 60, 60);
-
         int logoW = 130, logoH = 100;
 
         logoLabel.setBounds(60, 10, 130, 100);
@@ -1837,6 +1834,12 @@ public class Registros extends JFrame {
         if (btnModificar != null)      { btnModificar.setBounds(xCursor, btnY, btnW, btnH);         xCursor += btnW + gap; }
         if (btnEliminar != null)       { btnEliminar.setBounds(xCursor, btnY, btnW, btnH);          xCursor += btnW + gap; }
         if (btnModificaciones != null) btnModificaciones.setBounds(xCursor, btnY, wCambios, btnH);
+
+        // Boton de configuracion en la esquina inferior derecha, alineado con la fila de botones
+        if (btnSettings != null) {
+            int gearSize = btnH;
+            btnSettings.setBounds(w - gearSize - 15, btnY, gearSize, gearSize);
+        }
 
         cp.revalidate();
         cp.repaint();
